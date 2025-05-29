@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.example.neostorecompose"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.neostorecompose"
