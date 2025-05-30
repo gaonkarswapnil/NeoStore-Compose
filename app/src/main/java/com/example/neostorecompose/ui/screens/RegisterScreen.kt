@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.example.neostorecompose.R
 import com.example.neostorecompose.domain.model.request.UserRegistrationRequest
 import com.example.neostorecompose.ui.components.GenderRadioButton
-import com.example.neostorecompose.ui.components.RegistrationFields
+import com.example.neostorecompose.ui.components.CustomTextField
 import com.example.neostorecompose.ui.components.SocialButton
 import com.example.neostorecompose.ui.theme.OrangePrimary
 import com.example.neostorecompose.ui.theme.OrangeVariant
@@ -76,7 +76,7 @@ fun RegisterScreen(
                 )
 
 
-                RegistrationFields(
+                CustomTextField(
                     value = firstName,
                     onValueChange = { firstName = it },
                     label = "First Name",
@@ -85,7 +85,7 @@ fun RegisterScreen(
                     errorMessage = firstNameError
                 )
 
-                RegistrationFields(
+                CustomTextField(
                     value = lastName,
                     onValueChange = { lastName = it },
                     label = "Last Name",
@@ -94,7 +94,7 @@ fun RegisterScreen(
                     errorMessage = lastNameError
                 )
 
-                RegistrationFields(
+                CustomTextField(
                     value = email,
                     onValueChange = { email = it },
                     label = "Email",
@@ -103,7 +103,7 @@ fun RegisterScreen(
                     errorMessage = emailError
                 )
 
-                RegistrationFields(
+                CustomTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = "Password",
@@ -113,7 +113,7 @@ fun RegisterScreen(
                     errorMessage = passwordError
                 )
 
-                RegistrationFields(
+                CustomTextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
                     label = "Confirm Password",
@@ -133,7 +133,7 @@ fun RegisterScreen(
                     GenderRadioButton("Female", selectedGender) { selectedGender = it }
                 }
 
-                RegistrationFields(
+                CustomTextField(
                     value = phoneNo,
                     onValueChange = { phoneNo = it },
                     label = "Phone No",
@@ -208,7 +208,6 @@ fun RegisterScreen(
                         .fillMaxWidth(0.8f)
                 )
 
-                // Social Login Buttons
                 Row(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically,
