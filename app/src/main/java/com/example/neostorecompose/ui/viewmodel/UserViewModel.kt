@@ -2,9 +2,13 @@ package com.example.neostorecompose.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neostorecompose.data.dto.UserLoginResponse
+import com.example.neostorecompose.domain.model.UserLoginRequest
 import com.example.neostorecompose.domain.model.request.UserRegistrationRequest
 import com.example.neostorecompose.domain.model.response.UserRegistrationResponse
+import com.example.neostorecompose.domain.usecase.UserLoginUseCase
 import com.example.neostorecompose.domain.usecase.UserRegisterUseCase
+import com.example.neostorecompose.utils.TokenManager
 import com.example.neostorecompose.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserViewModel @Inject constructor(
     private val registerUseCase: UserRegisterUseCase,
+    private val loginUseCase: UserLoginUseCase,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _userRegisterState =
@@ -45,11 +51,11 @@ class UserViewModel @Inject constructor(
             try {
                 val response = registerUseCase.invoke(request)
 
-                if (response.isSuccessful){
+                if (response.isSuccessful) {
                     _userRegisterState.value = UiState.Success(
                         data = response.body()!!
                     )
-                } else{
+                } else {
                     _userRegisterState.value = UiState.Error("Response is Empty")
                 }
             } catch (e: Exception) {
@@ -57,7 +63,6 @@ class UserViewModel @Inject constructor(
             }
         }
     }
-
 
     private fun isValidEmail(email: String): Boolean {
         return Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$").matches(email)
@@ -67,5 +72,37 @@ class UserViewModel @Inject constructor(
         return Regex("^\\+?[0-9]{10,13}$").matches(phone)
     }
 
+    //Login User
+    private val _userLoginState =
+        MutableStateFlow<UiState<UserLoginResponse>>(UiState.Idle)
+    val userLoginState: StateFlow<UiState<UserLoginResponse>> = _userLoginState
 
+    fun userLogin(request: UserLoginRequest) {
+
+        if (!isValidEmail(request.email)) {
+            _userLoginState.value = UiState.Error("Invalid email format")
+            return
+        }
+
+        viewModelScope.launch {
+            _userLoginState.value = UiState.Loading
+
+            try {
+                val response = loginUseCase.invoke(request)
+                val accessToken = response.body()!!.user.accessToken
+                tokenManager.addAccessToken(accessToken)
+                if (response.isSuccessful) {
+                    _userLoginState.value = UiState.Success(
+                        data = response.body()!!
+                    )
+                } else {
+                    _userLoginState.value = UiState.Error("Response is Empty")
+                }
+            } catch (e: Exception) {
+                _userLoginState.value = UiState.Error(e.message!!)
+            }
+        }
+    }
+
+    fun getAccessToken() = tokenManager.getAccessToken()
 }
