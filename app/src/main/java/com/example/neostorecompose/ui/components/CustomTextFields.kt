@@ -13,7 +13,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun RegistrationFields(
+fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
     label: String,

@@ -1,6 +1,8 @@
 package com.example.neostorecompose.data.repositoryimpl
 
+import com.example.neostorecompose.data.dto.UserLoginResponse
 import com.example.neostorecompose.data.remote.UserApiService
+import com.example.neostorecompose.domain.model.UserLoginRequest
 import com.example.neostorecompose.domain.model.request.UserRegistrationRequest
 import com.example.neostorecompose.domain.model.response.UserRegistrationResponse
 import com.example.neostorecompose.domain.repository.UserRepository
@@ -28,5 +30,18 @@ class UserRepositoryImpl @Inject constructor(
             Response.error(res.code(), res.errorBody()!!)
         }
 
+    }
+
+    override suspend fun login(login: UserLoginRequest): Response<UserLoginResponse> {
+        val res = service.loginUser(
+            email = login.email,
+            password = login.password
+        )
+
+        return if(res.isSuccessful && res.body()!=null){
+            Response.success(res.body())
+        }else{
+            Response.error(res.code(), res.errorBody()!!)
+        }
     }
 }
