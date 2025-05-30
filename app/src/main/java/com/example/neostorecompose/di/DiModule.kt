@@ -1,7 +1,9 @@
 package com.example.neostorecompose.di
 
 import android.content.Context
+import com.example.neostorecompose.data.repositoryimpl.ProductRepositoryImpl
 import com.example.neostorecompose.data.repositoryimpl.UserRepositoryImpl
+import com.example.neostorecompose.domain.repository.ProductRepository
 import com.example.neostorecompose.domain.repository.UserRepository
 import com.example.neostorecompose.utils.TokenManager
 import dagger.Module
@@ -27,4 +29,9 @@ class DiModule {
         return TokenManager(context)
     }
 
+    @Provides
+    @Singleton
+    fun providesProductModule(productRepo: ProductRepositoryImpl): ProductRepository{
+        return productRepo
+    }
 }

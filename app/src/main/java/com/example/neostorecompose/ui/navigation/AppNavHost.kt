@@ -1,6 +1,5 @@
 package com.example.neostorecompose.ui.navigation
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -14,14 +13,20 @@ import com.example.neostorecompose.ui.screens.LoginScreen
 import com.example.neostorecompose.ui.screens.RegisterScreen
 import com.example.neostorecompose.ui.viewmodel.UserViewModel
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.example.neostorecompose.ui.components.BottomNavigationBar
 import com.example.neostorecompose.ui.screens.DashboardScreen
+import com.example.neostorecompose.ui.screens.ProductListScreen
+import com.example.neostorecompose.ui.viewmodel.ProductViewModel
 
 @Composable
 fun SetUpNav(navHostController: NavHostController) {
 
     val userViewModel: UserViewModel = hiltViewModel()
+    val productViewModel: ProductViewModel = hiltViewModel()
+
     val context = LocalContext.current
 
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
@@ -73,6 +78,18 @@ fun SetUpNav(navHostController: NavHostController) {
 
             composable(SealedBottomNavItem.dashboard.route) {
                 DashboardScreen(navHostController)
+            }
+
+            composable(Screens.goToProductList.route, arguments = listOf(
+                navArgument("categoryId") { type = NavType.IntType }
+            )) { navBackStackEntry ->
+               val categoryId =navBackStackEntry.arguments?.getInt("categoryId") ?: 0
+
+                ProductListScreen(
+                    productViewModel = productViewModel,
+                    categoryId = categoryId
+                )
+
             }
 
         }

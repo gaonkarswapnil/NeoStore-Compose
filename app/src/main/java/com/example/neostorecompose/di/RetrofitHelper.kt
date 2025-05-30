@@ -2,6 +2,7 @@ package com.example.neostorecompose.di
 
 import android.os.Build
 import com.example.neostorecompose.BuildConfig
+import com.example.neostorecompose.data.remote.ProductApiService
 import com.example.neostorecompose.data.remote.UserApiService
 import dagger.Module
 import dagger.Provides
@@ -41,5 +42,10 @@ object RetrofitHelper {
         return retrofit.create(UserApiService::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideProductService(retrofit: Retrofit): ProductApiService{
+        return retrofit.create(ProductApiService::class.java)
+    }
 
 }
