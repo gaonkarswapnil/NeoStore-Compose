@@ -1,4 +1,4 @@
-package com.example.neostorecompose.domain.model
+package com.example.neostorecompose.data.dto
 
 import java.io.Serializable
 

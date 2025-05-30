@@ -1,76 +1,93 @@
 package com.example.neostorecompose.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.neostorecompose.ui.components.AutoSlidingImageSliderComp
-import com.example.neostorecompose.ui.components.BackgroundForScreens
-import com.example.neostorecompose.ui.components.SearchBarComp
-import com.example.neostorecompose.ui.components.StaggeredRecyclerView
-import com.example.neostorecompose.ui.theme.OrangePrimary
+import com.example.neostorecompose.ui.components.*
+import com.example.neostorecompose.ui.viewmodel.DashboardViewModel
 import com.example.neostorecompose.ui.viewmodel.UserViewModel
+import com.example.neostorecompose.utils.UiState
+import okhttp3.internal.format
+
 
 @Composable
-fun DashboardScreen(navController:NavController) {
+fun DashboardScreen(navController: NavController) {
+    val userViewModel: UserViewModel = hiltViewModel()
+    val dashboardViewModel: DashboardViewModel = hiltViewModel()
+
+    val dashboardUiState = dashboardViewModel.dashboardRes.collectAsState().value
+    val accessToken = userViewModel.getAccessToken()
+    val imageList = remember { mutableStateListOf<String>() }
+
+    LaunchedEffect(accessToken) {
+        accessToken?.let { dashboardViewModel.getDashboard(it) }
+    }
 
     var searchQuery by remember { mutableStateOf("") }
 
-    Box(
-        modifier = Modifier
-            .BackgroundForScreens()
-    ) {
+    Box(modifier = Modifier.BackgroundForScreens()) {
+        when (dashboardUiState) {
+            is UiState.Loading -> {
+                LoaderComp()
+            }
 
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
+            is UiState.Success -> {
+                val profileData = dashboardUiState.data
+                val productCategoryList = profileData.data.product_categories
 
-            SearchBarComp(
-                query = searchQuery,
-                onQueryChange = { searchQuery = it }
-            )
+                for (image in productCategoryList) {
+                    if (image.icon_image.isNotEmpty()) {
+                        imageList.add(image.icon_image)
+                    }
+                }
 
-            AutoSlidingImageSliderComp(imageList = images)
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(3.dp),
+                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
+                    item {
+                        Spacer(modifier = Modifier.height(6.dp))
 
-            StaggeredRecyclerView(
-                categoryList = ,
-                navController = navController
-                )
+                        SearchBarComp(
+                            query = searchQuery,
+                            onQueryChange = { searchQuery = it }
+                        )
+                    }
 
+                    item {
+                        AutoSlidingImageSliderComp(imageUrls = imageList)
+                    }
+
+                    item {
+                        // Constrain height to prevent infinite measure
+                        Box(modifier = Modifier.height(400.dp)) {
+                            StaggeredRecyclerView(
+                                categoryList = productCategoryList,
+                                navController = navController
+                            )
+                        }
+                    }
+
+//                    item {
+//                        Spacer(modifier = Modifier.height(24.dp))
+//                    }
+                }
+            }
+
+            is UiState.Error -> {
+                // Show error if needed
+            }
+
+            else -> {}
         }
     }
 }
-
-
-//
-//1 SearchBar//
-//2 ViewPager
-//3 LazyVerticalGrid
-
-

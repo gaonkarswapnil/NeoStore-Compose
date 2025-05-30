@@ -14,6 +14,7 @@ import com.example.neostorecompose.R
 import com.example.neostorecompose.domain.model.request.UserRegistrationRequest
 import com.example.neostorecompose.ui.components.GenderRadioButton
 import com.example.neostorecompose.ui.components.CustomTextField
+import com.example.neostorecompose.ui.components.LoaderComp
 import com.example.neostorecompose.ui.components.SocialButton
 import com.example.neostorecompose.ui.theme.OrangePrimary
 import com.example.neostorecompose.ui.theme.OrangeVariant
@@ -224,14 +225,7 @@ fun RegisterScreen(
 
         when(registerState){
             is UiState.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.5f)), // semi-transparent blur
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = Color.White)
-                }
+                LoaderComp()
             }
             is UiState.Success -> {
                 LaunchedEffect(Unit) {

@@ -1,5 +1,6 @@
 package com.example.neostorecompose.data.repositoryimpl
 
+import com.example.neostorecompose.data.dto.DashboardResponse
 import com.example.neostorecompose.data.dto.UserLoginResponse
 import com.example.neostorecompose.data.remote.UserApiService
 import com.example.neostorecompose.domain.model.UserLoginRequest
@@ -42,6 +43,15 @@ class UserRepositoryImpl @Inject constructor(
             Response.success(res.body())
         }else{
             Response.error(res.code(), res.errorBody()!!)
+        }
+    }
+
+    override suspend fun getDashboard(accessToken: String): Response<DashboardResponse> {
+        val response = service.fetchUserAccountDetails(accessToken)
+        return if(response.isSuccessful){
+            Response.success(response.body())
+        }else{
+            Response.error(response.code(), response.errorBody()!!)
         }
     }
 }

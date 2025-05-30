@@ -52,8 +52,8 @@ fun LoginScreen(
     onClick: () -> Unit
 ) {
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("abhikdm@gmail.com") }
+    var password by remember { mutableStateOf("abhi1234") }
     val loginState = userViewModel.userLoginState.collectAsState().value
 
     var emailError by remember { mutableStateOf("") }

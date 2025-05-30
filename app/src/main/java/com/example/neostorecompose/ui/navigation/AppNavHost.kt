@@ -1,25 +1,51 @@
-    package com.example.neostorecompose.ui.navigation
+package com.example.neostorecompose.ui.navigation
 
-    import android.widget.Toast
-    import androidx.compose.runtime.Composable
-    import androidx.hilt.navigation.compose.hiltViewModel
-    import androidx.navigation.NavHostController
-    import androidx.navigation.compose.NavHost
-    import androidx.navigation.compose.composable
-    import com.example.neostorecompose.ui.screens.LoginScreen
-    import com.example.neostorecompose.ui.screens.RegisterScreen
-    import com.example.neostorecompose.ui.viewmodel.UserViewModel
-    import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.neostorecompose.ui.screens.LoginScreen
+import com.example.neostorecompose.ui.screens.RegisterScreen
+import com.example.neostorecompose.ui.viewmodel.UserViewModel
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.neostorecompose.ui.components.BottomNavigationBar
+import com.example.neostorecompose.ui.screens.DashboardScreen
 
-    @Composable
-    fun SetUpNav(navHostController: NavHostController) {
+@Composable
+fun SetUpNav(navHostController: NavHostController) {
 
-        val userViewModel: UserViewModel = hiltViewModel()
-        val context = LocalContext.current
+    val userViewModel: UserViewModel = hiltViewModel()
+    val context = LocalContext.current
 
+    val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val showBottomBar = currentRoute in listOf(
+        SealedBottomNavItem.dashboard.route,
+        SealedBottomNavItem.search.route,
+        SealedBottomNavItem.cart.route,
+        SealedBottomNavItem.userprofile.route,
+    )
+
+
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                BottomNavigationBar(navController = navHostController)
+            }
+        }
+    ) {
         NavHost(
             navController = navHostController,
-            startDestination = Screens.Login.route
+            startDestination = Screens.Login.route,
+            modifier = Modifier.padding(it)
         ) {
 
             composable(Screens.Register.route) {
@@ -31,11 +57,13 @@
                 )
             }
 
-            composable(Screens.Login.route){
+            composable(Screens.Login.route) {
                 LoginScreen(
                     userViewModel = userViewModel,
                     onLoginSuccess = {
-
+                        navHostController.navigate(SealedBottomNavItem.dashboard.route) {
+                            popUpTo("login") { inclusive = true }
+                        }
                     },
                     onClick = {
                         navHostController.navigate(Screens.Register.route)
@@ -43,6 +71,11 @@
                 )
             }
 
+            composable(SealedBottomNavItem.dashboard.route) {
+                DashboardScreen(navHostController)
+            }
+
         }
 
     }
+}

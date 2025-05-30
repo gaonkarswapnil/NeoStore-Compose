@@ -6,9 +6,13 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
@@ -19,43 +23,49 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun AutoSlidingImageSliderComp(
-    imageUrls: List<String>,
+    imageUrls: List<String>
 ) {
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { imageUrls.size })
-    val imageCount = imageUrls.size
+    val pagerState = rememberPagerState(pageCount = { imageUrls.size })
 
     // Auto-scroll logic
     LaunchedEffect(pagerState.currentPage) {
         delay(3000)
-        val nextPage = (pagerState.currentPage + 1) % imageCount
+        val nextPage = (pagerState.currentPage + 1) % imageUrls.size
         pagerState.animateScrollToPage(nextPage)
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp)
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .height(200.dp)
         ) { page ->
-            AsyncImage(
-                model = imageUrls[page],
-                contentDescription = "Image $page",
-                contentScale = ContentScale.Crop,
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 8.dp)
-                    .background(Color.LightGray, RoundedCornerShape(12.dp))
-            )
+                    .padding(4.dp) // Move padding here
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.LightGray)
+            ) {
+                AsyncImage(
+                    model = imageUrls[page],
+                    contentDescription = "Image $page",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
-
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         CustomPagerIndicator(
-            totalDots = imageCount,
+            totalDots = imageUrls.size,
             selectedIndex = pagerState.currentPage
         )
     }
@@ -74,16 +84,18 @@ fun CustomPagerIndicator(
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(8.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
     ) {
         repeat(totalDots) { index ->
             Box(
                 modifier = Modifier
                     .padding(horizontal = spacing / 2)
                     .size(dotSize)
+                    .clip(CircleShape)
                     .background(
-                        color = if (index == selectedIndex) activeColor else inactiveColor,
-                        shape = CircleShape
+                        color = if (index == selectedIndex) activeColor else inactiveColor
                     )
             )
         }
