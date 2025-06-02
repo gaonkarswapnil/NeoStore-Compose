@@ -17,13 +17,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.neostorecompose.ui.components.BottomNavigationBar
 import com.example.neostorecompose.ui.screens.DashboardScreen
+import com.example.neostorecompose.ui.screens.ProfileScreen
+import com.example.neostorecompose.ui.viewmodel.DashboardViewModel
 
 @Composable
 fun SetUpNav(navHostController: NavHostController) {
 
     val userViewModel: UserViewModel = hiltViewModel()
     val context = LocalContext.current
-
+    val dashboardViewModel: DashboardViewModel = hiltViewModel()
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -73,6 +75,9 @@ fun SetUpNav(navHostController: NavHostController) {
 
             composable(SealedBottomNavItem.dashboard.route) {
                 DashboardScreen(navHostController)
+            }
+            composable(SealedBottomNavItem.userprofile.route) {
+                ProfileScreen(userViewModel, dashboardViewModel)
             }
 
         }

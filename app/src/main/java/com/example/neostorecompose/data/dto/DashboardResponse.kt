@@ -1,7 +1,9 @@
 package com.example.neostorecompose.data.dto
 
+import com.google.gson.annotations.SerializedName
+
 data class DashboardResponse(
-    val `data`: ProductData,
+    @SerializedName("data") val productData: ProductData,
     val message: String,
     val status: Int,
     val user_msg: String
