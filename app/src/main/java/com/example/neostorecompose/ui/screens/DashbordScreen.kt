@@ -40,7 +40,7 @@ fun DashboardScreen(navController: NavController) {
 
             is UiState.Success -> {
                 val profileData = dashboardUiState.data
-                val productCategoryList = profileData.data.product_categories
+                val productCategoryList = profileData.productData.product_categories
 
                 for (image in productCategoryList) {
                     if (image.icon_image.isNotEmpty()) {
