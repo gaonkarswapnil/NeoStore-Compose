@@ -23,6 +23,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.neostorecompose.domain.model.EditCartRequest
 import com.example.neostorecompose.ui.components.BackgroundForScreens
 import com.example.neostorecompose.ui.components.CartItem
 import com.example.neostorecompose.ui.components.LoaderComp
@@ -51,6 +57,8 @@ fun CartListScreen(navHostController: NavHostController) {
     }
 
     val cartResponse = cartViewModel.productList.collectAsState().value
+    val cartItemsState = remember { mutableStateOf<Map<Int, Int>>(emptyMap()) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -92,13 +100,56 @@ fun CartListScreen(navHostController: NavHostController) {
 
                 is UiState.Success -> {
                     val data = cartResponse.data.productItem
+
+                    LaunchedEffect(Unit) {
+                        val initialQuantities = data.associate { it.productId to it.quantity }
+                        cartItemsState.value = initialQuantities
+                    }
+
+                    val totalPrice = cartItemsState.value.entries.sumOf { (productId, quantity) ->
+                        val product = data.find { it.productId == productId }?.product
+                        quantity * (product?.cost ?: 0)
+                    }
+
+
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(bottom = 80.dp) // Enough padding to avoid overlap
                     ) {
                         items(data){item ->
-                            CartItem(item)
+
+                            val quantity = cartItemsState.value[item.productId] ?: item.quantity
+
+                            CartItem(
+                                item = item,
+                                quantity = quantity,
+                                addClick = {
+                                    val newQty = quantity + 1
+                                    cartItemsState.value = cartItemsState.value.toMutableMap().apply {
+                                        put(item.productId, newQty)
+                                    }
+                                    cartViewModel.editCartItems(
+                                        accessToken!!,
+                                        EditCartRequest(item.productId, newQty)
+                                    )
+                                },
+                                removeClick = {
+                                    val newQty = maxOf(1, quantity - 1)
+                                    cartItemsState.value = cartItemsState.value.toMutableMap().apply {
+                                        put(item.productId, newQty)
+                                    }
+                                    cartViewModel.editCartItems(
+                                        accessToken!!,
+                                        EditCartRequest(item.productId, newQty)
+                                    )
+                                },
+                            )
+//                            val request = EditCartRequest(
+//                                productId = item.productId,
+//                                quantity = quantity
+//                            )
+//                            cartViewModel.editCartItems(accessToken!!, request)
                         }
                     }
 
@@ -110,7 +161,7 @@ fun CartListScreen(navHostController: NavHostController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "$ ${cartResponse.data.total}",
+                            text = "$ ${totalPrice}",
                             fontSize = 26.sp
                         )
                         Spacer(modifier = Modifier.width(5.dp))

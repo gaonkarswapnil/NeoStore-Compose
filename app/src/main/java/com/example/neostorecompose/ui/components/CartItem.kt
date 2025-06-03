@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,12 +48,11 @@ import com.example.neostorecompose.ui.viewmodel.UserViewModel
 
 @Composable
 fun CartItem(
-    item: ProductItemData
+    item: ProductItemData,
+    quantity: Int,
+    addClick: () -> Unit,
+    removeClick: () -> Unit
 ) {
-
-    var quantity by remember{
-        mutableIntStateOf(item.quantity)
-    }
 
     Card(
         colors = CardDefaults.cardColors(
@@ -120,10 +120,11 @@ fun CartItem(
                             icon = Icons.Filled.Remove,
                             iconDesc = "remove",
                             onClick = {
-                                quantity--
-                                if(quantity==0) {
-                                    quantity = 100
-                                }
+//                                quantity--
+//                                if(quantity==0) {
+//                                    quantity = 100
+//                                }
+                                removeClick()
                             }
                         )
 
@@ -139,12 +140,16 @@ fun CartItem(
                             color = Color.Green,
                             icon = Icons.Filled.Add,
                             iconDesc = "add",
-                            onClick = {quantity++}
+                            onClick = {
+                                addClick()
+                            }
                         )
                     }
 
+                    val cost = quantity * item.product.cost
+
                     Text(
-                        text=item.product.subTotal.toString(),
+                        text= cost.toString(),
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
