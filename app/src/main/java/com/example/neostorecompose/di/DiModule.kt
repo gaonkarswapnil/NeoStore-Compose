@@ -1,8 +1,10 @@
 package com.example.neostorecompose.di
 
 import android.content.Context
+import com.example.neostorecompose.data.repositoryimpl.CartRepositoryImpl
 import com.example.neostorecompose.data.repositoryimpl.ProductRepositoryImpl
 import com.example.neostorecompose.data.repositoryimpl.UserRepositoryImpl
+import com.example.neostorecompose.domain.repository.CartRepository
 import com.example.neostorecompose.domain.repository.ProductRepository
 import com.example.neostorecompose.domain.repository.UserRepository
 import com.example.neostorecompose.utils.TokenManager
@@ -33,5 +35,11 @@ class DiModule {
     @Singleton
     fun providesProductModule(productRepo: ProductRepositoryImpl): ProductRepository{
         return productRepo
+    }
+
+    @Provides
+    @Singleton
+    fun providesCartModule(cartRepo: CartRepositoryImpl): CartRepository{
+        return cartRepo
     }
 }

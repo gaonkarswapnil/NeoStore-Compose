@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.neostorecompose.ui.navigation.SealedBottomNavItem
@@ -51,7 +52,7 @@ fun BottomNavigationBar(
                                 saveState = true
                             }
                             launchSingleTop = true
-                            restoreState = true
+//                            restoreState = true
                         }
                     }
                 }

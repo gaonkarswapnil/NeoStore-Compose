@@ -1,6 +1,5 @@
 package com.example.neostorecompose.ui.navigation
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -18,12 +17,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.neostorecompose.ui.components.BottomNavigationBar
+import com.example.neostorecompose.ui.screens.CartListScreen
 import com.example.neostorecompose.ui.screens.DashboardScreen
 import com.example.neostorecompose.ui.screens.EditProfileScreen
 import com.example.neostorecompose.ui.screens.ProductListScreen
 import com.example.neostorecompose.ui.viewmodel.ProductViewModel
 import com.example.neostorecompose.ui.screens.ProfileScreen
 import com.example.neostorecompose.ui.screens.UserProfileDataScreen
+import com.example.neostorecompose.ui.viewmodel.CartViewModel
 import com.example.neostorecompose.ui.viewmodel.DashboardViewModel
 
 @Composable
@@ -34,6 +35,7 @@ fun SetUpNav(navHostController: NavHostController) {
 
     val context = LocalContext.current
     val dashboardViewModel: DashboardViewModel = hiltViewModel()
+    val cartViewModel: CartViewModel = hiltViewModel()
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -86,6 +88,11 @@ fun SetUpNav(navHostController: NavHostController) {
             }
             composable(SealedBottomNavItem.userprofile.route) {
                 ProfileScreen(userViewModel, dashboardViewModel, navHostController)
+            }
+
+            composable(SealedBottomNavItem.cart.route){
+//                CartListScreen(userViewModel, cartViewModel)
+                CartListScreen(navHostController)
             }
 
             composable(Screens.goToProductList.route, arguments = listOf(
