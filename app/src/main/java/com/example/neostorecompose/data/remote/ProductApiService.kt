@@ -18,4 +18,5 @@ interface ProductApiService {
         @Query("product_id") productId: Int
     ): Response<ProductDetailsResponse>
 
+
 }

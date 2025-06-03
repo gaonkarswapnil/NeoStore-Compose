@@ -5,4 +5,6 @@ sealed class Screens(val route: String) {
     object Login: Screens("login")
 
     object goToProductList :Screens("productList/{categoryId}")
-}
+    object goToProductDetails : Screens("productDetails/{productId}") {
+        fun passProductId(productId: Int) = "productDetails/$productId"
+    }}

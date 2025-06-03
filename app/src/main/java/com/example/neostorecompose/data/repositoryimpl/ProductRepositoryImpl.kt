@@ -23,6 +23,14 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getProductDetails(productId: Int): Response<ProductDetailsResponse> {
+        val response = service.getProductDetails(productId = productId)
 
+        return if(response.isSuccessful && response.body() != null){
+            Response.success(response.body())
+        }else{
+            Response.error(response.code(), response.errorBody()!!)
+        }
+    }
 
 }

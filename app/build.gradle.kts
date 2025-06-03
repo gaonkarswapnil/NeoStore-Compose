@@ -116,9 +116,13 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended:1.6.1")
 
 
+    implementation("io.coil-kt:coil-gif:2.4.0")
+
+
 //    Google Fonts
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
 }
+
 
 kapt {
     correctErrorTypes = true
