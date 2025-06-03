@@ -19,13 +19,15 @@ fun IconButtonComp(
     color: Color,
     icon: ImageVector,
     iconDesc: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    enabled: Boolean = false
 ) {
 
     IconButton(
         onClick = {
             onClick()
         },
+        enabled = enabled,
         modifier = Modifier
             .clip(RoundedCornerShape(50))
             .background(color)

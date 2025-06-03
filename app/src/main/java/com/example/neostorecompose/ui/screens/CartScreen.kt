@@ -23,11 +23,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.neostorecompose.domain.model.EditCartRequest
+import com.example.neostorecompose.domain.model.CartRequest
 import com.example.neostorecompose.ui.components.BackgroundForScreens
 import com.example.neostorecompose.ui.components.CartItem
 import com.example.neostorecompose.ui.components.LoaderComp
@@ -126,13 +123,15 @@ fun CartListScreen(navHostController: NavHostController) {
                                 quantity = quantity,
                                 addClick = {
                                     val newQty = quantity + 1
-                                    cartItemsState.value = cartItemsState.value.toMutableMap().apply {
-                                        put(item.productId, newQty)
+                                    if (newQty <= 8) {
+                                        cartItemsState.value = cartItemsState.value.toMutableMap().apply {
+                                            put(item.productId, newQty)
+                                        }
+                                        cartViewModel.editCartItems(
+                                            accessToken!!,
+                                            CartRequest(item.productId, newQty)
+                                        )
                                     }
-                                    cartViewModel.editCartItems(
-                                        accessToken!!,
-                                        EditCartRequest(item.productId, newQty)
-                                    )
                                 },
                                 removeClick = {
                                     val newQty = maxOf(1, quantity - 1)
@@ -141,15 +140,23 @@ fun CartListScreen(navHostController: NavHostController) {
                                     }
                                     cartViewModel.editCartItems(
                                         accessToken!!,
-                                        EditCartRequest(item.productId, newQty)
+                                        CartRequest(item.productId, newQty)
                                     )
                                 },
+                                deleteItem = {
+                                    cartItemsState.value = cartItemsState.value.toMutableMap().apply {
+                                        remove(item.productId)
+                                    }
+
+                                    cartViewModel.deleteCartItem(
+                                        accessToken!!,
+                                        item.productId
+                                    )
+//                                    cartViewModel.getProductList(accessToken)
+                                },
+                                disableAdd = quantity >= 8,
+                                disableRemove = quantity <= 1
                             )
-//                            val request = EditCartRequest(
-//                                productId = item.productId,
-//                                quantity = quantity
-//                            )
-//                            cartViewModel.editCartItems(accessToken!!, request)
                         }
                     }
 
