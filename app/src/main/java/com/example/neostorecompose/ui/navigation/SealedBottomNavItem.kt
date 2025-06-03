@@ -15,6 +15,6 @@ sealed class SealedBottomNavItem(
 ) {
     object dashboard : SealedBottomNavItem("dashboard", Icons.Default.Home, "Dashboard")
     object search : SealedBottomNavItem("search",Icons.Default.Search, "Search")
-    object cart : SealedBottomNavItem("dashboard", Icons.Default.ShoppingCart, "Cart")
+    object cart : SealedBottomNavItem("cart", Icons.Default.ShoppingCart, "Cart")
     object userprofile : SealedBottomNavItem("userProfile", Icons.Default.AccountCircle, "Profile")
 }
