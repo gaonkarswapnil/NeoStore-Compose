@@ -26,9 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.neostorecompose.ui.components.BackgroundForScreens
 import com.example.neostorecompose.ui.components.LoaderComp
 import com.example.neostorecompose.ui.components.ProductItem
+import com.example.neostorecompose.ui.navigation.Screens
 import com.example.neostorecompose.ui.theme.OrangePrimary
 import com.example.neostorecompose.ui.viewmodel.ProductViewModel
 import com.example.neostorecompose.utils.UiState
@@ -37,7 +39,8 @@ import com.example.neostorecompose.utils.UiState
 @Composable
 fun ProductListScreen(
     productViewModel: ProductViewModel,
-    categoryId: Int
+    categoryId: Int,
+    navController: NavController
 ) {
 
     val productListUiState = productViewModel.productList.collectAsState().value
@@ -95,7 +98,9 @@ fun ProductListScreen(
                         .padding(inner)
                 ) {
                     items(data){ productItem ->
-                        ProductItem(productItem)
+                        ProductItem(productItem){
+                            navController.navigate(Screens.goToProductDetails.passProductId(productItem.id))
+                        }
                     }
                 }
             }

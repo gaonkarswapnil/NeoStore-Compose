@@ -1,5 +1,6 @@
 package com.example.neostorecompose.data.repositoryimpl
 
+import com.example.neostorecompose.data.dto.ProductDetailsResponse
 import com.example.neostorecompose.data.dto.ProductsListResponse
 import com.example.neostorecompose.data.remote.ProductApiService
 import com.example.neostorecompose.domain.repository.ProductRepository
@@ -19,6 +20,16 @@ class ProductRepositoryImpl @Inject constructor(
             Response.success(res.body())
         }else{
             Response.error(res.code(), res.errorBody()!!)
+        }
+    }
+
+    override suspend fun getProductDetails(productId: Int): Response<ProductDetailsResponse> {
+        val response = service.getProductDetails(productId = productId)
+
+        return if(response.isSuccessful && response.body() != null){
+            Response.success(response.body())
+        }else{
+            Response.error(response.code(), response.errorBody()!!)
         }
     }
 

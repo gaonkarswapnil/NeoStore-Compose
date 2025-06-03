@@ -2,6 +2,7 @@ package com.example.neostorecompose.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +32,9 @@ import coil.request.ImageRequest
 import com.example.neostorecompose.data.dto.ProductItem
 
 @Composable
-fun ProductItem(data: ProductItem) {
+fun ProductItem(
+    data: ProductItem,
+    onClick: () -> Unit) {
 
 //    val rating by remember { mutableStateOf(data.rating) }
 
@@ -39,7 +42,8 @@ fun ProductItem(data: ProductItem) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 10.dp, vertical = 5.dp)
-            .clip(RoundedCornerShape(25.dp)),
+            .clip(RoundedCornerShape(25.dp))
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(Color.LightGray),
     ) {
         Column(
