@@ -19,6 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.neostorecompose.ui.components.BottomNavigationBar
 import com.example.neostorecompose.ui.screens.DashboardScreen
+import com.example.neostorecompose.ui.screens.ProductDetailsScreen
 import com.example.neostorecompose.ui.screens.ProductListScreen
 import com.example.neostorecompose.ui.viewmodel.ProductViewModel
 import com.example.neostorecompose.ui.screens.ProfileScreen
@@ -93,8 +94,19 @@ fun SetUpNav(navHostController: NavHostController) {
 
                 ProductListScreen(
                     productViewModel = productViewModel,
-                    categoryId = categoryId
+                    categoryId = categoryId,
+                    navController = navHostController
                 )
+
+            }
+            composable(Screens.goToProductDetails.route, arguments = listOf(
+                navArgument("productId") { type = NavType.IntType }
+            )) { navBackStackEntry ->
+                val productId =navBackStackEntry.arguments?.getInt("productId") ?: 0
+
+                ProductDetailsScreen(
+                    productViewModel = productViewModel,
+                    productId = productId)
 
             }
 
