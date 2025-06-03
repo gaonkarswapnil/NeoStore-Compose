@@ -1,6 +1,8 @@
 package com.example.neostorecompose.data.repositoryimpl
 
 import com.example.neostorecompose.data.dto.DashboardResponse
+import com.example.neostorecompose.data.dto.UpdateProfileRequest
+import com.example.neostorecompose.data.dto.UpdateProfileResponse
 import com.example.neostorecompose.data.dto.UserLoginResponse
 import com.example.neostorecompose.data.remote.UserApiService
 import com.example.neostorecompose.domain.model.UserLoginRequest
@@ -48,6 +50,27 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun getDashboard(accessToken: String): Response<DashboardResponse> {
         val response = service.fetchUserAccountDetails(accessToken)
+        return if(response.isSuccessful){
+            Response.success(response.body())
+        }else{
+            Response.error(response.code(), response.errorBody()!!)
+        }
+    }
+
+
+    override suspend fun updateUserProfileData(
+        accessToken: String,
+        updateProfileRequest: UpdateProfileRequest
+    ): Response<UpdateProfileResponse> {
+        val response = service.updateUserProfile(
+            accessToken,
+            firstName = updateProfileRequest.first_name,
+            lastName = updateProfileRequest.last_name,
+            email = updateProfileRequest.email,
+            phoneNo = updateProfileRequest.phone_no,
+            dob = updateProfileRequest.dob,
+            profilePic = updateProfileRequest.profile_pic,
+        )
         return if(response.isSuccessful){
             Response.success(response.body())
         }else{

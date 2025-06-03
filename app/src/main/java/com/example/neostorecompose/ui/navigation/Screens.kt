@@ -5,4 +5,8 @@ sealed class Screens(val route: String) {
     object Login: Screens("login")
 
     object goToProductList :Screens("productList/{categoryId}")
+
+    object ProfileScreen : Screens("userProfileScreen")
+    object EditProfileScreen : Screens("editProfileScreen")
+
 }

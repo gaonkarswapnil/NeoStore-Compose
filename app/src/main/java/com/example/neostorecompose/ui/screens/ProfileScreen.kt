@@ -41,10 +41,12 @@ import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.neostorecompose.domain.model.request.UserRegistrationRequest
 import com.example.neostorecompose.ui.components.BackgroundForScreens
 import com.example.neostorecompose.ui.components.LoaderComp
 import com.example.neostorecompose.ui.components.ProfileRow
+import com.example.neostorecompose.ui.navigation.Screens
 import com.example.neostorecompose.ui.viewmodel.DashboardViewModel
 import com.example.neostorecompose.ui.viewmodel.UserViewModel
 import com.example.neostorecompose.utils.UiState
@@ -52,16 +54,17 @@ import com.example.neostorecompose.utils.UiState
 @Composable
 fun ProfileScreen(
     userViewModel: UserViewModel,
-    dashboardViewModel: DashboardViewModel
+    dashboardViewModel: DashboardViewModel,
+    navController:NavController
 ) {
     val accessToken = userViewModel.getAccessToken()
-    LaunchedEffect(accessToken){
+    LaunchedEffect(accessToken) {
         accessToken?.let { dashboardViewModel.getDashboard(it) }
     }
     val dashboardResponse = dashboardViewModel.dashboardRes.collectAsState().value
 
-    Log.d("AccessTokenProfile", "ProfileScreenAccessTOken: ${ accessToken} ")
-    Log.d("AccessTokenProfile", "ProfileScreenResponse: ${ dashboardResponse.toString()} ")
+    Log.d("AccessTokenProfile", "ProfileScreenAccessTOken: ${accessToken} ")
+    Log.d("AccessTokenProfile", "ProfileScreenResponse: ${dashboardResponse.toString()} ")
 
     Box(
         modifier = Modifier
@@ -76,18 +79,18 @@ fun ProfileScreen(
                 .padding(16.dp)
         ) {
 
-            when(dashboardResponse){
-                is UiState.Error -> { }
+            when (dashboardResponse) {
+                is UiState.Error -> {}
                 is UiState.Loading -> LoaderComp()
                 is UiState.Success -> {
 
-                    val res= dashboardResponse.data
+                    val res = dashboardResponse.data
 //                    Log.d("AccessTokenProfileSuccess", "ProfileScreenResponse: ${ .toString()} ")
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                        colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -122,7 +125,8 @@ fun ProfileScreen(
                     }
 
                 }
-                else->{
+
+                else -> {
 
                 }
             }
@@ -143,9 +147,22 @@ fun ProfileScreen(
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    ProfileRow(image = Icons.Default.AccountCircle, text = "Profile Information")
-                    ProfileRow(image = Icons.Default.Translate, text = "Language Preferences")
-                    ProfileRow(image = Icons.Default.Subscriptions, text = "Manage Subscription")
+                    ProfileRow(
+                        image = Icons.Default.AccountCircle, text = "Profile Information",
+                        onClick = {
+                            navController.navigate(Screens.ProfileScreen.route)
+                        }
+
+                    )
+                    ProfileRow(
+                        image = Icons.Default.Translate, text = "Language Preferences",
+                        onClick = {}
+
+                    )
+                    ProfileRow(
+                        image = Icons.Default.Subscriptions, text = "Manage Subscription",
+                        onClick = {}
+                    )
                 }
             }
 
@@ -164,7 +181,12 @@ fun ProfileScreen(
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    ProfileRow(image = Icons.Default.ContactSupport, text = "Contact & Customer Support")
+                    ProfileRow(
+                        image = Icons.Default.ContactSupport,
+                        text = "Contact & Customer Support",
+                        onClick = {}
+
+                    )
                 }
             }
 
@@ -183,8 +205,15 @@ fun ProfileScreen(
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    ProfileRow(image = Icons.Default.List, text = "My Orders")
-                    ProfileRow(image = Icons.Default.Logout, text = "Logout")
+                    ProfileRow(
+                        image = Icons.Default.List, text = "My Orders",
+                        onClick = {}
+
+                    )
+                    ProfileRow(
+                        image = Icons.Default.Logout, text = "Logout",
+                        onClick = {}
+                    )
                 }
             }
 
@@ -203,8 +232,14 @@ fun ProfileScreen(
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    ProfileRow(image = Icons.Default.LocationCity, text = "Store Location")
-                    ProfileRow(image = Icons.Default.StarRate, text = "Rate Us")
+                    ProfileRow(
+                        image = Icons.Default.LocationCity, text = "Store Location",
+                        onClick = {}
+                    )
+                    ProfileRow(
+                        image = Icons.Default.StarRate, text = "Rate Us",
+                        onClick = {}
+                    )
                 }
             }
         }
