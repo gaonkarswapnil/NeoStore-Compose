@@ -1,5 +1,6 @@
 package com.example.neostorecompose.data.repositoryimpl
 
+import com.example.neostorecompose.data.dto.ProductDetailsResponse
 import com.example.neostorecompose.data.dto.ProductsListResponse
 import com.example.neostorecompose.data.remote.ProductApiService
 import com.example.neostorecompose.domain.repository.ProductRepository
@@ -21,5 +22,7 @@ class ProductRepositoryImpl @Inject constructor(
             Response.error(res.code(), res.errorBody()!!)
         }
     }
+
+
 
 }
