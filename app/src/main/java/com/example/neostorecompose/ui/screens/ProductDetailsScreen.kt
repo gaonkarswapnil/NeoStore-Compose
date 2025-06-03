@@ -53,7 +53,7 @@ fun ProductDetailsScreen(
     productId: Int
 ) {
     val productDetailsUiState = productViewModel.productDetailsData.collectAsState().value
-    val selectedImageUrl = remember { mutableStateOf<String?>(null) }
+    val selectedImageUrl = remember{ mutableStateOf<String?>(null) }
 
 //    val dashboardUiState = dashboardViewModel.dashboardRes.collectAsState().value
 
@@ -105,6 +105,9 @@ fun ProductDetailsScreen(
                 .verticalScroll(
                     rememberScrollState()
                 )
+            modifier = Modifier.BackgroundForScreens().padding(padding).verticalScroll(
+                rememberScrollState()
+            )
         ) {
 
             when (productDetailsUiState) {
@@ -124,7 +127,7 @@ fun ProductDetailsScreen(
                 is UiState.Success -> {
                     val data = productDetailsUiState.data.productDetailsData
 
-                    val category = when (data.product_category_id) {
+                    val category = when(data.product_category_id){
                         1 -> "Table"
                         2 -> "Chair"
                         3 -> "Sofa"
@@ -132,7 +135,7 @@ fun ProductDetailsScreen(
                         else -> "NA"
                     }
 
-                    if (selectedImageUrl.value == null) {
+                    if(selectedImageUrl.value == null){
                         selectedImageUrl.value = data.product_images[0].image
                     }
                     Card(
@@ -207,6 +210,8 @@ fun ProductDetailsScreen(
                                 }
                             )
 
+                            CustomText(text = "DESCRIPTION", style = MaterialTheme.typography.headlineSmall)
+                            CustomText(text = data.description, style = MaterialTheme.typography.bodySmall)
                             CustomText(
                                 text = "DESCRIPTION",
                                 style = MaterialTheme.typography.headlineSmall
@@ -223,6 +228,9 @@ fun ProductDetailsScreen(
                             .fillMaxWidth()
                             .padding(10.dp),
                         colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                    ){
+                        Row(modifier = Modifier.padding(8.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                            CustomButton(text = "BUY NOW", onClick = { }, colors = ButtonDefaults.buttonColors(OrangePrimary))
                     ) {
                         Row(
                             modifier = Modifier.padding(8.dp),
@@ -236,6 +244,8 @@ fun ProductDetailsScreen(
                                 colors = ButtonDefaults.buttonColors(OrangePrimary)
                             )
                             Spacer(modifier = Modifier.weight(1f))
+                            CustomButton(text = "RATE ", onClick = { }, colors = ButtonDefaults.buttonColors(
+                                Color.Gray))
                             CustomButton(
                                 text = "RATE ", onClick = { }, colors = ButtonDefaults.buttonColors(
                                     Color.Gray
