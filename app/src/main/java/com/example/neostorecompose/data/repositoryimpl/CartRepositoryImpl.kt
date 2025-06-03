@@ -3,7 +3,7 @@ package com.example.neostorecompose.data.repositoryimpl
 import com.example.neostorecompose.data.dto.CartListResponse
 import com.example.neostorecompose.data.dto.CartOperationResponse
 import com.example.neostorecompose.data.remote.CartApiService
-import com.example.neostorecompose.domain.model.EditCartRequest
+import com.example.neostorecompose.domain.model.CartRequest
 import com.example.neostorecompose.domain.repository.CartRepository
 import retrofit2.Response
 import javax.inject.Inject
@@ -25,7 +25,7 @@ class CartRepositoryImpl @Inject constructor(
 
     override suspend fun editCartItems(
         accessToken: String,
-        request: EditCartRequest,
+        request: CartRequest,
     ): Response<CartOperationResponse> {
         val response = cartService.editCartItems(
             accessToken = accessToken,
@@ -48,6 +48,23 @@ class CartRepositoryImpl @Inject constructor(
         val response = cartService.deleteCartItem(
             accessToken = accessToken,
             productId = productId
+        )
+
+        return if(response.isSuccessful && response.body()!=null){
+            Response.success(response.body())
+        }else{
+            Response.error(response.code(), response.errorBody()!!)
+        }
+    }
+
+    override suspend fun addToCart(
+        accessToken: String,
+        request: CartRequest,
+    ): Response<CartOperationResponse> {
+        val response = cartService.addToCart(
+            accessToken = accessToken,
+            productId = request.productId,
+            quantity = request.quantity
         )
 
         return if(response.isSuccessful && response.body()!=null){
