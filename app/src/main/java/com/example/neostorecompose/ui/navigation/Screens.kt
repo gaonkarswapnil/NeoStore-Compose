@@ -8,3 +8,8 @@ sealed class Screens(val route: String) {
     object goToProductDetails : Screens("productDetails/{productId}") {
         fun passProductId(productId: Int) = "productDetails/$productId"
     }}
+
+    object ProfileScreen : Screens("userProfileScreen")
+    object EditProfileScreen : Screens("editProfileScreen")
+
+}

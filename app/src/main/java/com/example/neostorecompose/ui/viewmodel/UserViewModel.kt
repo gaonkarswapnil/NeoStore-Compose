@@ -2,10 +2,13 @@ package com.example.neostorecompose.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neostorecompose.data.dto.UpdateProfileRequest
+import com.example.neostorecompose.data.dto.UpdateProfileResponse
 import com.example.neostorecompose.data.dto.UserLoginResponse
 import com.example.neostorecompose.domain.model.UserLoginRequest
 import com.example.neostorecompose.domain.model.request.UserRegistrationRequest
 import com.example.neostorecompose.domain.model.response.UserRegistrationResponse
+import com.example.neostorecompose.domain.usecase.UpdateProfileUseCase
 import com.example.neostorecompose.domain.usecase.UserLoginUseCase
 import com.example.neostorecompose.domain.usecase.UserRegisterUseCase
 import com.example.neostorecompose.utils.TokenManager
@@ -20,12 +23,18 @@ import javax.inject.Inject
 class UserViewModel @Inject constructor(
     private val registerUseCase: UserRegisterUseCase,
     private val loginUseCase: UserLoginUseCase,
+    private val updateProfileUseCase: UpdateProfileUseCase,
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _userRegisterState =
         MutableStateFlow<UiState<UserRegistrationResponse>>(UiState.Idle)
     val userState: StateFlow<UiState<UserRegistrationResponse>> = _userRegisterState
+
+
+    private val _updateProfileRes =
+        MutableStateFlow<UiState<UpdateProfileResponse>>(UiState.Idle)
+    val updateProfileRes :StateFlow<UiState<UpdateProfileResponse>> = _updateProfileRes
 
     fun userRegistration(request: UserRegistrationRequest) {
 
@@ -103,6 +112,25 @@ class UserViewModel @Inject constructor(
             }
         }
     }
+
+
+    fun updateProfileDetails(accessToken:String, updateProfileRequest: UpdateProfileRequest){
+        _updateProfileRes.value = UiState.Loading
+        viewModelScope.launch {
+            try {
+                val response = updateProfileUseCase.invoke(accessToken, updateProfileRequest)
+
+                if(response.isSuccessful && response.body()!=null){
+                    _updateProfileRes.value = UiState.Success(response.body()!!)
+                }else{
+                    _updateProfileRes.value = UiState.Error(response.errorBody().toString())
+                }
+            }catch (e:Exception){
+                _updateProfileRes.value = UiState.Error(e.message!!)
+            }
+        }
+    }
+
 
     fun getAccessToken() = tokenManager.getAccessToken()
 }

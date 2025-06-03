@@ -20,9 +20,11 @@ import com.example.neostorecompose.ui.components.BottomNavigationBar
 import com.example.neostorecompose.ui.screens.CartListScreen
 import com.example.neostorecompose.ui.screens.DashboardScreen
 import com.example.neostorecompose.ui.screens.ProductDetailsScreen
+import com.example.neostorecompose.ui.screens.EditProfileScreen
 import com.example.neostorecompose.ui.screens.ProductListScreen
 import com.example.neostorecompose.ui.viewmodel.ProductViewModel
 import com.example.neostorecompose.ui.screens.ProfileScreen
+import com.example.neostorecompose.ui.screens.UserProfileDataScreen
 import com.example.neostorecompose.ui.viewmodel.CartViewModel
 import com.example.neostorecompose.ui.viewmodel.DashboardViewModel
 
@@ -86,7 +88,7 @@ fun SetUpNav(navHostController: NavHostController) {
                 DashboardScreen(navHostController)
             }
             composable(SealedBottomNavItem.userprofile.route) {
-                ProfileScreen(userViewModel, dashboardViewModel)
+                ProfileScreen(userViewModel, dashboardViewModel, navHostController)
             }
 
             composable(SealedBottomNavItem.cart.route){
@@ -115,6 +117,15 @@ fun SetUpNav(navHostController: NavHostController) {
                     productViewModel = productViewModel,
                     productId = productId)
 
+            }
+
+
+            composable(Screens.ProfileScreen.route){
+                UserProfileDataScreen(dashboardViewModel, userViewModel, navHostController)
+            }
+
+            composable(Screens.EditProfileScreen.route){
+               EditProfileScreen(navHostController,userViewModel, dashboardViewModel)
             }
 
         }

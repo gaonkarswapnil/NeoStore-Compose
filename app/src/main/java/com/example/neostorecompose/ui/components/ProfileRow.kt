@@ -1,5 +1,6 @@
 package com.example.neostorecompose.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,10 +24,14 @@ import androidx.compose.ui.unit.dp
 fun ProfileRow(
     image: ImageVector,
     text: String,
+    onClick :()->Unit
 ){
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable {
+                onClick()
+            }
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
