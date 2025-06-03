@@ -9,4 +9,6 @@ interface CartRepository {
     suspend fun getCartItems(accessToken: String): Response<CartListResponse>
 
     suspend fun editCartItems(accessToken: String, request: EditCartRequest): Response<CartOperationResponse>
+
+    suspend fun deleteCartItem(accessToken: String, productId: Int): Response<CartOperationResponse>
 }

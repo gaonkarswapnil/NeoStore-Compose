@@ -40,4 +40,21 @@ class CartRepositoryImpl @Inject constructor(
         }
     }
 
+
+    override suspend fun deleteCartItem(
+        accessToken: String,
+        productId: Int,
+    ): Response<CartOperationResponse> {
+        val response = cartService.deleteCartItem(
+            accessToken = accessToken,
+            productId = productId
+        )
+
+        return if(response.isSuccessful && response.body()!=null){
+            Response.success(response.body())
+        }else{
+            Response.error(response.code(), response.errorBody()!!)
+        }
+    }
+
 }

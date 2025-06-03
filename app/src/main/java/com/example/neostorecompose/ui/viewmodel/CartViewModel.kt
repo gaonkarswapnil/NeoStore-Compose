@@ -7,6 +7,7 @@ import com.example.neostorecompose.data.dto.CartOperationResponse
 import com.example.neostorecompose.data.dto.ProductsListResponse
 import com.example.neostorecompose.domain.model.EditCartRequest
 import com.example.neostorecompose.domain.usecase.CartListUseCase
+import com.example.neostorecompose.domain.usecase.DeleteItemUseCase
 import com.example.neostorecompose.domain.usecase.EditCartUseCase
 import com.example.neostorecompose.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CartViewModel @Inject constructor(
     private val cartList: CartListUseCase,
-    private val editCart: EditCartUseCase
+    private val editCart: EditCartUseCase,
+    private val delete: DeleteItemUseCase
 ): ViewModel(){
 
     private val _cartListState = MutableStateFlow<UiState<CartListResponse>>(UiState.Idle)
@@ -52,7 +54,7 @@ class CartViewModel @Inject constructor(
 
     fun editCartItems(accessToken: String, request: EditCartRequest){
         viewModelScope.launch {
-            _editCartState.value = UiState.Idle
+            _editCartState.value = UiState.Loading
 
             try {
                 val response = editCart(accessToken, request)
@@ -73,5 +75,30 @@ class CartViewModel @Inject constructor(
     }
 
 
+
+    private val _deleteItemState = MutableStateFlow<UiState<CartOperationResponse>>(UiState.Idle)
+
+    fun deleteCartItem(accessToken: String, productId: Int){
+        viewModelScope.launch {
+            _deleteItemState.value = UiState.Loading
+
+            try {
+                val response = delete(accessToken, productId)
+                getProductList(accessToken)
+                if (response.isSuccessful){
+                    _deleteItemState.value = UiState.Success(
+                        response.body()!!
+                    )
+                }else{
+                    _deleteItemState.value = UiState.Error("Response ie Empty")
+                }
+
+            }catch (e: Exception){
+                _deleteItemState.value = UiState.Error(
+                    message = e.message!!
+                )
+            }
+        }
+    }
 
 }

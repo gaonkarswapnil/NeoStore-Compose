@@ -51,7 +51,10 @@ fun CartItem(
     item: ProductItemData,
     quantity: Int,
     addClick: () -> Unit,
-    removeClick: () -> Unit
+    removeClick: () -> Unit,
+    deleteItem: () -> Unit,
+    disableAdd: Boolean = false,
+    disableRemove: Boolean = false
 ) {
 
     Card(
@@ -120,12 +123,9 @@ fun CartItem(
                             icon = Icons.Filled.Remove,
                             iconDesc = "remove",
                             onClick = {
-//                                quantity--
-//                                if(quantity==0) {
-//                                    quantity = 100
-//                                }
                                 removeClick()
-                            }
+                            },
+                            enabled = !disableRemove
                         )
 
                         Text(
@@ -142,7 +142,8 @@ fun CartItem(
                             iconDesc = "add",
                             onClick = {
                                 addClick()
-                            }
+                            },
+                            enabled = !disableAdd
                         )
                     }
 
@@ -164,7 +165,7 @@ fun CartItem(
                     .fillMaxWidth()
                     .padding(horizontal = 10.dp, vertical = 5.dp),
                 onClick = {
-
+                    deleteItem()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Gray.copy(alpha = 0.5f),

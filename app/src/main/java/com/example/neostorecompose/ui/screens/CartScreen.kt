@@ -126,13 +126,15 @@ fun CartListScreen(navHostController: NavHostController) {
                                 quantity = quantity,
                                 addClick = {
                                     val newQty = quantity + 1
-                                    cartItemsState.value = cartItemsState.value.toMutableMap().apply {
-                                        put(item.productId, newQty)
+                                    if (newQty <= 8) {
+                                        cartItemsState.value = cartItemsState.value.toMutableMap().apply {
+                                            put(item.productId, newQty)
+                                        }
+                                        cartViewModel.editCartItems(
+                                            accessToken!!,
+                                            EditCartRequest(item.productId, newQty)
+                                        )
                                     }
-                                    cartViewModel.editCartItems(
-                                        accessToken!!,
-                                        EditCartRequest(item.productId, newQty)
-                                    )
                                 },
                                 removeClick = {
                                     val newQty = maxOf(1, quantity - 1)
@@ -144,12 +146,20 @@ fun CartListScreen(navHostController: NavHostController) {
                                         EditCartRequest(item.productId, newQty)
                                     )
                                 },
+                                deleteItem = {
+                                    cartItemsState.value = cartItemsState.value.toMutableMap().apply {
+                                        remove(item.productId)
+                                    }
+
+                                    cartViewModel.deleteCartItem(
+                                        accessToken!!,
+                                        item.productId
+                                    )
+//                                    cartViewModel.getProductList(accessToken)
+                                },
+                                disableAdd = quantity >= 8,
+                                disableRemove = quantity <= 1
                             )
-//                            val request = EditCartRequest(
-//                                productId = item.productId,
-//                                quantity = quantity
-//                            )
-//                            cartViewModel.editCartItems(accessToken!!, request)
                         }
                     }
 

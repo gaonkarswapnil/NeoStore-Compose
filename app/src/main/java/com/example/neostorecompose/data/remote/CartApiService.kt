@@ -23,4 +23,11 @@ interface CartApiService {
         @Field("product_id") productId: Int,
         @Field("quantity") quantity: Int
     ): Response<CartOperationResponse>
+
+    @FormUrlEncoded
+    @POST("api/deleteCart")
+    suspend fun deleteCartItem(
+        @Header("access_token") accessToken: String,
+        @Field("product_id") productId: Int
+    ): Response<CartOperationResponse>
 }
