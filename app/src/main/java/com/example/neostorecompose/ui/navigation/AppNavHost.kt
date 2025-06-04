@@ -131,6 +131,7 @@ fun SetUpNav(navHostController: NavHostController) {
                 val productId = navBackStackEntry.arguments?.getInt("productId") ?: 0
 
                 ProductDetailsScreen(
+                    navController = navHostController,
                     productViewModel = productViewModel,
                     productId = productId,
                     cartViewModel = cartViewModel,

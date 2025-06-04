@@ -41,6 +41,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.neostorecompose.domain.model.CartRequest
 import com.example.neostorecompose.ui.components.BackgroundForScreens
@@ -51,6 +54,8 @@ import com.example.neostorecompose.ui.components.LoaderComp
 import com.example.neostorecompose.ui.components.ProductLazyRow
 import com.example.neostorecompose.ui.components.RatingBar
 import com.example.neostorecompose.ui.components.RatingDialog
+import com.example.neostorecompose.ui.navigation.Screens
+import com.example.neostorecompose.ui.navigation.SealedBottomNavItem
 import com.example.neostorecompose.ui.theme.OrangePrimary
 import com.example.neostorecompose.ui.viewmodel.CartViewModel
 import com.example.neostorecompose.ui.viewmodel.ProductViewModel
@@ -60,6 +65,7 @@ import com.example.neostorecompose.utils.UiState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailsScreen(
+    navController: NavHostController,
     productViewModel: ProductViewModel,
     cartViewModel: CartViewModel,
     userViewModel: UserViewModel,
@@ -105,7 +111,7 @@ fun ProductDetailsScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             Icons.Filled.ArrowBackIosNew,
                             contentDescription = "Back",
@@ -120,27 +126,26 @@ fun ProductDetailsScreen(
         }
     ) { padding ->
 
-        Column(
-            modifier = Modifier.BackgroundForScreens().padding(padding).verticalScroll(
-                rememberScrollState()
-            )
-        ) {
+        when (productDetailsUiState) {
 
-            when (productDetailsUiState) {
+            is UiState.Error -> {
+                Text(
+                    text = "ERROR",
+                    color = Color.Red,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
 
-                is UiState.Error -> {
-                    Text(
-                        text = "ERROR",
-                        color = Color.Red,
-                        modifier = Modifier.padding(top = 8.dp)
+            UiState.Loading -> {
+                LoaderComp()
+            }
+
+            is UiState.Success -> {
+                Column(
+                    modifier = Modifier.BackgroundForScreens().padding(padding).verticalScroll(
+                        rememberScrollState()
                     )
-                }
-
-                UiState.Loading -> {
-                    LoaderComp()
-                }
-
-                is UiState.Success -> {
+                ) {
                     val data = productDetailsUiState.data.productDetailsData
 
                     val category = when (data.product_category_id) {
@@ -248,31 +253,46 @@ fun ProductDetailsScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             var quantityText by remember { mutableStateOf("1") }
+                            val isAddedToCart = remember { mutableStateOf(false) }
 
                             if (showDialog.value) {
                                 CustomDialog(
                                     title = data.name,
                                     quantity = quantityText.toIntOrNull() ?: 1, // fallback to 1
                                     onDismiss = { newQty ->
-                                        quantityText= newQty.toString()
+                                        quantityText = newQty.toString()
                                         val request = CartRequest(data.id, newQty)
-                                        cartViewModel.addToCart(accessToken = accessToken.toString(), request = request)
+                                        cartViewModel.addToCart(
+                                            accessToken = accessToken.toString(),
+                                            request = request
+                                        )
                                         Log.d("Sample Data", "$newQty")
+                                        Toast.makeText(
+                                            context,
+                                            "Added to Cart!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                         showDialog.value = false
-
+                                        isAddedToCart.value = true
                                     },
                                     imageUrl = data.product_images[0].image
                                 )
                             }
                             CustomButton(
-                                text = "Add To Cart",
-                                onClick = { showDialog.value = true },
+                                text = if (isAddedToCart.value) "Go To Cart" else "Add To Cart",
+                                onClick = {
+                                    if (isAddedToCart.value) {
+                                        navController.navigate(SealedBottomNavItem.cart.route)
+                                    } else {
+                                        showDialog.value = true
+                                    }
+                                },
                                 colors = ButtonDefaults.buttonColors(OrangePrimary),
                                 modifier = Modifier
                                     .weight(1f)
                             )
 //                            Spacer(modifier = Modifier.weight(1f))
-                            if(ratingDialog.value){
+                            if (ratingDialog.value) {
                                 var selectedRating by remember { mutableIntStateOf(data.rating) }
 
                                 RatingDialog(
@@ -284,16 +304,18 @@ fun ProductDetailsScreen(
                                         selectedRating = newRating
 
                                         ratingDialog.value = false
-                                        productViewModel.setProductRating(data.id,newRating)
+                                        productViewModel.setProductRating(data.id, newRating)
                                         Log.d("RatingDialog", "New Rating: $newRating")
-                                        Toast.makeText(context,"Rating Submitted Successfully",
-                                            Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context, "Rating Submitted Successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 )
                             }
                             CustomButton(
                                 text = "RATE ",
-                                onClick = { ratingDialog.value = true},
+                                onClick = { ratingDialog.value = true },
                                 colors = ButtonDefaults.buttonColors(
                                     Color.Gray
                                 ),
@@ -304,9 +326,10 @@ fun ProductDetailsScreen(
                     }
                 }
 
-                else -> {
+            }
 
-                }
+            else -> {
+
             }
         }
 
