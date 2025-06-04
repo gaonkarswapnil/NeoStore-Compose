@@ -10,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -17,7 +18,8 @@ fun RatingBar(
     rating: Int,
     modifier: Modifier = Modifier,
     totalStars: Int = 5,
-    onRatingChanged: ((Int) -> Unit)? = null // Nullable callback
+    size: Int = 24,
+    onRatingChanged: ((Int) -> Unit)? = null
 ) {
     Row(modifier = modifier) {
         for (i in 1..totalStars) {
@@ -27,7 +29,7 @@ fun RatingBar(
                 contentDescription = "$i Star",
                 tint = if (isSelected) Color(0xFFFFC107) else Color.Gray,
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(size.dp)
                     .then(
                         if (onRatingChanged != null) {
                             Modifier.clickable { onRatingChanged(i) }

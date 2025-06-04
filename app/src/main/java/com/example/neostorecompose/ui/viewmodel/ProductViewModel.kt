@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.neostorecompose.data.dto.ProductDetailsResponse
 import com.example.neostorecompose.data.dto.ProductsListResponse
+import com.example.neostorecompose.data.dto.SetProductRating
+import com.example.neostorecompose.domain.model.response.UserRegistrationResponse
 import com.example.neostorecompose.domain.usecase.ProductDetailsUseCase
 import com.example.neostorecompose.domain.usecase.ProductListUseCase
+import com.example.neostorecompose.domain.usecase.SetProductRatingUseCase
 import com.example.neostorecompose.ui.navigation.Screens
 import com.example.neostorecompose.utils.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,30 +20,35 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductViewModel @Inject constructor(
     private val product: ProductListUseCase,
-    private val productDetails: ProductDetailsUseCase
-): ViewModel() {
+    private val productDetails: ProductDetailsUseCase,
+    private val setRating: SetProductRatingUseCase
+) : ViewModel() {
 
     private val _productListState = MutableStateFlow<UiState<ProductsListResponse>>(UiState.Idle)
     val productList: StateFlow<UiState<ProductsListResponse>> = _productListState
 
-    private val _productsDetailsData = MutableStateFlow<UiState<ProductDetailsResponse>>(UiState.Idle)
+    private val _productsDetailsData =
+        MutableStateFlow<UiState<ProductDetailsResponse>>(UiState.Idle)
     val productDetailsData: StateFlow<UiState<ProductDetailsResponse>> = _productsDetailsData
 
-    fun getProductList(categoryId: Int){
+    private val _setProductRatingState = MutableStateFlow<UiState<SetProductRating>>(UiState.Idle)
+    val setProductRatingState: StateFlow<UiState<SetProductRating>> = _setProductRatingState
+
+    fun getProductList(categoryId: Int) {
         viewModelScope.launch {
             _productListState.value = UiState.Loading
             try {
                 val response = product(categoryId)
 
-                if(response.isSuccessful){
+                if (response.isSuccessful) {
                     _productListState.value = UiState.Success(
                         response.body()!!
                     )
-                }else{
+                } else {
                     _productListState.value = UiState.Error("Response is Empty")
                 }
 
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _productListState.value = UiState.Error(
                     message = e.message!!
                 )
@@ -48,22 +56,39 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun getProductsDetailsData(prouctId: Int){
+    fun getProductsDetailsData(prouctId: Int) {
         viewModelScope.launch {
             _productsDetailsData.value = UiState.Loading
             try {
                 val response = productDetails(prouctId)
-                if (response.isSuccessful){
+                if (response.isSuccessful) {
                     _productsDetailsData.value = UiState.Success(
                         response.body()!!
                     )
-                }else{
+                } else {
                     _productsDetailsData.value = UiState.Error("Response is Empty")
                 }
-            }catch (e: Exception){
+            } catch (e: Exception) {
                 _productsDetailsData.value = UiState.Error(message = e.message!!)
             }
         }
     }
 
+    fun setProductRating(productId: Int, rating: Int) {
+        viewModelScope.launch {
+            _setProductRatingState.value = UiState.Loading
+            try {
+                val response = setRating.invoke(productId, rating)
+                if (response.isSuccessful) {
+                    _setProductRatingState.value = UiState.Success(
+                        response.body()!!
+                    )
+                } else {
+                    _productsDetailsData.value = UiState.Error("Response is Empty")
+                }
+            } catch (e: Exception) {
+                _productsDetailsData.value = UiState.Error(message = e.message!!)
+            }
+        }
+    }
 }

@@ -115,7 +115,10 @@ fun SetUpNav(navHostController: NavHostController) {
 
                 ProductDetailsScreen(
                     productViewModel = productViewModel,
-                    productId = productId)
+                    productId = productId,
+                    cartViewModel = cartViewModel,
+                    userViewModel = userViewModel
+                )
 
             }
 
