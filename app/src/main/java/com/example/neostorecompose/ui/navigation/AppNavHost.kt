@@ -17,24 +17,30 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.neostorecompose.ui.components.BottomNavigationBar
+import com.example.neostorecompose.ui.screens.AddAddressScreen
+import com.example.neostorecompose.ui.screens.AddressListScreen
 import com.example.neostorecompose.ui.screens.CartListScreen
 import com.example.neostorecompose.ui.screens.DashboardScreen
 import com.example.neostorecompose.ui.screens.ProductDetailsScreen
 import com.example.neostorecompose.ui.screens.EditProfileScreen
+import com.example.neostorecompose.ui.screens.OrderListScreen
 import com.example.neostorecompose.ui.screens.ProductListScreen
 import com.example.neostorecompose.ui.viewmodel.ProductViewModel
 import com.example.neostorecompose.ui.screens.ProfileScreen
 import com.example.neostorecompose.ui.screens.UserProfileDataScreen
+import com.example.neostorecompose.ui.viewmodel.AddressViewModel
 import com.example.neostorecompose.ui.viewmodel.CartViewModel
 import com.example.neostorecompose.ui.viewmodel.DashboardViewModel
+import com.example.neostorecompose.ui.viewmodel.OrderViewModel
 
 @Composable
 fun SetUpNav(navHostController: NavHostController) {
 
     val userViewModel: UserViewModel = hiltViewModel()
     val productViewModel: ProductViewModel = hiltViewModel()
+    val addressViewModel: AddressViewModel = hiltViewModel()
+    val orderViewModel : OrderViewModel = hiltViewModel()
 
-    val context = LocalContext.current
     val dashboardViewModel: DashboardViewModel = hiltViewModel()
     val cartViewModel: CartViewModel = hiltViewModel()
     val navBackStackEntry by navHostController.currentBackStackEntryAsState()
@@ -91,15 +97,24 @@ fun SetUpNav(navHostController: NavHostController) {
                 ProfileScreen(userViewModel, dashboardViewModel, navHostController)
             }
 
-            composable(SealedBottomNavItem.cart.route){
+            composable(SealedBottomNavItem.cart.route) {
 //                CartListScreen(userViewModel, cartViewModel)
-                CartListScreen(navHostController)
+                CartListScreen(
+                    navHostController, userViewModel, cartViewModel, addressViewModel,
+                    provideAddress = {addressList->
+                        if(addressList.isEmpty()){
+                            navHostController.navigate(Screens.AddAddressScreen.route)
+                        }else{
+                            navHostController.navigate(Screens.AddressListScreen.route)
+                        }
+                    })
             }
 
-            composable(Screens.goToProductList.route, arguments = listOf(
+            composable(
+                Screens.goToProductList.route, arguments = listOf(
                 navArgument("categoryId") { type = NavType.IntType }
             )) { navBackStackEntry ->
-               val categoryId =navBackStackEntry.arguments?.getInt("categoryId") ?: 0
+                val categoryId = navBackStackEntry.arguments?.getInt("categoryId") ?: 0
 
                 ProductListScreen(
                     productViewModel = productViewModel,
@@ -108,26 +123,39 @@ fun SetUpNav(navHostController: NavHostController) {
                 )
 
             }
-            composable(Screens.goToProductDetails.route, arguments = listOf(
+            composable(
+                Screens.goToProductDetails.route, arguments = listOf(
                 navArgument("productId") { type = NavType.IntType }
             )) { navBackStackEntry ->
-                val productId =navBackStackEntry.arguments?.getInt("productId") ?: 0
+                val productId = navBackStackEntry.arguments?.getInt("productId") ?: 0
 
                 ProductDetailsScreen(
                     productViewModel = productViewModel,
-                    productId = productId)
+                    productId = productId
+                )
 
             }
 
 
-            composable(Screens.ProfileScreen.route){
+            composable(Screens.ProfileScreen.route) {
                 UserProfileDataScreen(dashboardViewModel, userViewModel, navHostController)
             }
 
-            composable(Screens.EditProfileScreen.route){
-               EditProfileScreen(navHostController,userViewModel, dashboardViewModel)
+            composable(Screens.EditProfileScreen.route) {
+                EditProfileScreen(navHostController, userViewModel, dashboardViewModel)
             }
 
+
+            composable(Screens.AddAddressScreen.route) {
+                AddAddressScreen(navHostController, addressViewModel)
+            }
+            composable(Screens.AddressListScreen.route) {
+                AddressListScreen(navHostController, addressViewModel, orderViewModel, userViewModel)
+            }
+
+            composable(Screens.OrderListScreen.route){
+                OrderListScreen()
+            }
         }
 
     }

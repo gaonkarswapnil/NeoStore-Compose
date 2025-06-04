@@ -1,6 +1,9 @@
 package com.example.neostorecompose.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,37 +28,50 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.neostorecompose.R
+import com.example.neostorecompose.domain.model.Address
 import com.example.neostorecompose.domain.model.CartRequest
 import com.example.neostorecompose.ui.components.BackgroundForScreens
 import com.example.neostorecompose.ui.components.CartItem
 import com.example.neostorecompose.ui.components.LoaderComp
+import com.example.neostorecompose.ui.viewmodel.AddressViewModel
 import com.example.neostorecompose.ui.viewmodel.CartViewModel
 import com.example.neostorecompose.ui.viewmodel.UserViewModel
 import com.example.neostorecompose.utils.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartListScreen(navHostController: NavHostController) {
-
-    val userViewModel: UserViewModel = hiltViewModel()
-    val cartViewModel: CartViewModel = hiltViewModel()
+fun CartListScreen(
+    navHostController: NavHostController,
+    userViewModel: UserViewModel,
+    cartViewModel: CartViewModel,
+    addressViewModel: AddressViewModel,
+    provideAddress: (List<Address>) -> Unit
+) {
+    val addressListState = addressViewModel.addressList.collectAsState().value
 
     val accessToken = userViewModel.getAccessToken()
-
-    LaunchedEffect(accessToken) {
-        accessToken?.let { cartViewModel.getProductList(it) }
-    }
-
     val cartResponse = cartViewModel.productList.collectAsState().value
     val cartItemsState = remember { mutableStateOf<Map<Int, Int>>(emptyMap()) }
 
+
+    val isLoading = remember { mutableStateOf(false) }
+
+    LaunchedEffect(accessToken) {
+        accessToken?.let { cartViewModel.getProductList(it) }
+        addressViewModel.getAllAddresses()
+    }
+
+    // Scaffold layout
     Scaffold(
         topBar = {
             TopAppBar(
@@ -74,15 +90,18 @@ fun CartListScreen(navHostController: NavHostController) {
                 )
             )
         }
-    ) { inner ->
+    ) { innerPadding ->
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .BackgroundForScreens()
-                .padding(inner)
+                .padding(innerPadding)
         ) {
-            // Scrollable list with bottom padding to avoid overlap
+
+            if(isLoading.value){
+                LoaderComp()
+            }
 
             when (cartResponse) {
                 is UiState.Error -> {
@@ -92,114 +111,152 @@ fun CartListScreen(navHostController: NavHostController) {
                         modifier = Modifier.padding(top = 8.dp)
                     )
                 }
-
-                is UiState.Loading -> LoaderComp()
-
+                is UiState.Loading -> {
+                    // LoaderComp is now properly inside the composable body
+                    LoaderComp()
+                }
                 is UiState.Success -> {
                     val data = cartResponse.data.productItem
 
-                    LaunchedEffect(Unit) {
-                        val initialQuantities = data.associate { it.productId to it.quantity }
-                        cartItemsState.value = initialQuantities
-                    }
+                  if(data.isNullOrEmpty()){
 
-                    val totalPrice = cartItemsState.value.entries.sumOf { (productId, quantity) ->
-                        val product = data.find { it.productId == productId }?.product
-                        quantity * (product?.cost ?: 0)
-                    }
+                     Column(
+                         horizontalAlignment = Alignment.CenterHorizontally,
+                         verticalArrangement = Arrangement.Center,
+                         modifier = Modifier.align(Alignment.Center)
+                             .padding(8.dp)
+                     ) {
 
+                         Image(
+                             painter = painterResource(R.drawable.emptycart),
+                             contentDescription = "",
 
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(bottom = 80.dp) // Enough padding to avoid overlap
-                    ) {
-                        items(data){item ->
+                         )
+                         Text(
+                             text="Empty Cart",
+                             style = MaterialTheme.typography.titleMedium
+                         )
 
-                            val quantity = cartItemsState.value[item.productId] ?: item.quantity
+                     }
 
-                            CartItem(
-                                item = item,
-                                quantity = quantity,
-                                addClick = {
-                                    val newQty = quantity + 1
-                                    if (newQty <= 8) {
-                                        cartItemsState.value = cartItemsState.value.toMutableMap().apply {
-                                            put(item.productId, newQty)
-                                        }
-                                        cartViewModel.editCartItems(
-                                            accessToken!!,
-                                            CartRequest(item.productId, newQty)
-                                        )
-                                    }
-                                },
-                                removeClick = {
-                                    val newQty = maxOf(1, quantity - 1)
-                                    cartItemsState.value = cartItemsState.value.toMutableMap().apply {
-                                        put(item.productId, newQty)
-                                    }
-                                    cartViewModel.editCartItems(
-                                        accessToken!!,
-                                        CartRequest(item.productId, newQty)
-                                    )
-                                },
-                                deleteItem = {
-                                    cartItemsState.value = cartItemsState.value.toMutableMap().apply {
-                                        remove(item.productId)
-                                    }
+                  }else{
+                      LaunchedEffect(Unit) {
+                          val initialQuantities = data.associate { it.productId to it.quantity }
+                          cartItemsState.value = initialQuantities
+                      }
 
-                                    cartViewModel.deleteCartItem(
-                                        accessToken!!,
-                                        item.productId
-                                    )
-//                                    cartViewModel.getProductList(accessToken)
-                                },
-                                disableAdd = quantity >= 8,
-                                disableRemove = quantity <= 1
-                            )
-                        }
-                    }
+                      val totalPrice = cartItemsState.value.entries.sumOf { (productId, quantity) ->
+                          val product = data.find { it.productId == productId }?.product
+                          quantity * (product?.cost ?: 0)
+                      }
 
-                    // Bottom price text (left)
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(start = 10.dp, bottom = 20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "$ ${totalPrice}",
-                            fontSize = 26.sp
-                        )
-                        Spacer(modifier = Modifier.width(5.dp))
-                        Icon(
-                            imageVector = Icons.Outlined.Info,
-                            contentDescription = "Info",
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+                      // Cart items list
+                      LazyColumn(
+                          modifier = Modifier
+                              .fillMaxSize()
+                              .padding(bottom = 80.dp) // Avoid overlap with buttons
+                      ) {
+                          items(data) { item ->
 
-                    // Bottom button (right)
-                    Row(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(end = 10.dp, bottom = 20.dp)
-                    ) {
-                        Button(onClick = {}) {
-                            Text(
-                                text = "Place Order",
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
+                              val quantity = cartItemsState.value[item.productId] ?: item.quantity
 
+                              CartItem(
+                                  item = item,
+                                  quantity = quantity,
+                                  addClick = {
+                                      val newQty = quantity + 1
+                                      if (newQty <= 8) {
+                                          cartItemsState.value =
+                                              cartItemsState.value.toMutableMap().apply {
+                                                  put(item.productId, newQty)
+                                              }
+                                          cartViewModel.editCartItems(
+                                              accessToken!!,
+                                              CartRequest(item.productId, newQty)
+                                          )
+                                      }
+                                  },
+                                  removeClick = {
+                                      val newQty = maxOf(1, quantity - 1)
+                                      cartItemsState.value =
+                                          cartItemsState.value.toMutableMap().apply {
+                                              put(item.productId, newQty)
+                                          }
+                                      cartViewModel.editCartItems(
+                                          accessToken!!,
+                                          CartRequest(item.productId, newQty)
+                                      )
+                                  },
+                                  deleteItem = {
+                                      cartItemsState.value =
+                                          cartItemsState.value.toMutableMap().apply {
+                                              remove(item.productId)
+                                          }
+
+                                      cartViewModel.deleteCartItem(
+                                          accessToken!!,
+                                          item.productId
+                                      )
+                                  },
+                                  disableAdd = quantity >= 8,
+                                  disableRemove = quantity <= 1
+                              )
+                          }
+                      }
+
+                      // Total price display
+                      Row(
+                          modifier = Modifier
+                              .align(Alignment.BottomStart)
+                              .padding(start = 10.dp, bottom = 20.dp),
+                          verticalAlignment = Alignment.CenterVertically
+                      ) {
+                          Text(
+                              text = "$ ${totalPrice}",
+                              fontSize = 26.sp
+                          )
+                          Spacer(modifier = Modifier.width(5.dp))
+                          Icon(
+                              imageVector = Icons.Outlined.Info,
+                              contentDescription = "Info",
+                              modifier = Modifier.size(20.dp)
+                          )
+                      }
+
+                      // "Place Order" button
+                      Row(
+                          modifier = Modifier
+                              .align(Alignment.BottomEnd)
+                              .padding(end = 10.dp, bottom = 20.dp)
+                      ) {
+                          Button(onClick = {
+                              when (addressListState) {
+                                  is UiState.Loading -> {
+                                      // You should not call LoaderComp outside of composable scope
+                                      isLoading.value = true
+                                  }
+                                  is UiState.Success -> {
+                                      val list = addressListState.data
+                                      provideAddress(list)
+                                  }
+                                  is UiState.Error -> {
+                                      // Handle error state
+                                  }
+                                  else -> {}
+                              }
+                          }) {
+                              Text(
+                                  text = "Place Order",
+                                  fontSize = 16.sp
+                              )
+                          }
+                      }
+
+                  }
                 }
-
                 else -> {}
             }
 
         }
-
-
     }
 }

@@ -3,6 +3,7 @@ package com.example.neostorecompose.di
 import android.os.Build
 import com.example.neostorecompose.BuildConfig
 import com.example.neostorecompose.data.remote.CartApiService
+import com.example.neostorecompose.data.remote.OrderApiService
 import com.example.neostorecompose.data.remote.ProductApiService
 import com.example.neostorecompose.data.remote.UserApiService
 import dagger.Module
@@ -54,4 +55,14 @@ object RetrofitHelper {
     fun provideCartService(retrofit: Retrofit): CartApiService{
         return retrofit.create(CartApiService::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideOrderService(retrofit: Retrofit): OrderApiService{
+        return retrofit.create(OrderApiService::class.java)
+    }
+
+
+
+
 }
