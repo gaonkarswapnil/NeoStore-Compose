@@ -55,13 +55,13 @@ fun ProfileScreen(
     dashboardViewModel: DashboardViewModel
 ) {
     val accessToken = userViewModel.getAccessToken()
-    LaunchedEffect(accessToken){
+    LaunchedEffect(accessToken) {
         accessToken?.let { dashboardViewModel.getDashboard(it) }
     }
     val dashboardResponse = dashboardViewModel.dashboardRes.collectAsState().value
 
-    Log.d("AccessTokenProfile", "ProfileScreenAccessTOken: ${ accessToken} ")
-    Log.d("AccessTokenProfile", "ProfileScreenResponse: ${ dashboardResponse.toString()} ")
+    Log.d("AccessTokenProfile", "ProfileScreenAccessTOken: ${accessToken} ")
+    Log.d("AccessTokenProfile", "ProfileScreenResponse: ${dashboardResponse.toString()} ")
 
     Box(
         modifier = Modifier
@@ -69,19 +69,18 @@ fun ProfileScreen(
             .fillMaxSize()
     ) {
 
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
 
-            when(dashboardResponse){
-                is UiState.Error -> { }
-                is UiState.Loading -> LoaderComp()
-                is UiState.Success -> {
-
-                    val res= dashboardResponse.data
+        when (dashboardResponse) {
+            is UiState.Error -> {}
+            is UiState.Loading -> LoaderComp()
+            is UiState.Success -> {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    val res = dashboardResponse.data
 //                    Log.d("AccessTokenProfileSuccess", "ProfileScreenResponse: ${ .toString()} ")
                     Card(
                         modifier = Modifier
@@ -121,92 +120,103 @@ fun ProfileScreen(
                         }
                     }
 
-                }
-                else->{
+                    // Manage Account Card
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Manage Account",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Start,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            ProfileRow(
+                                image = Icons.Default.AccountCircle,
+                                text = "Profile Information"
+                            )
+                            ProfileRow(
+                                image = Icons.Default.Translate,
+                                text = "Language Preferences"
+                            )
+                            ProfileRow(
+                                image = Icons.Default.Subscriptions,
+                                text = "Manage Subscription"
+                            )
+                        }
+                    }
+
+                    // Customer Support Card
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Customer Support",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Start,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            ProfileRow(
+                                image = Icons.Default.ContactSupport,
+                                text = "Contact & Customer Support"
+                            )
+                        }
+                    }
+
+                    // Account Card
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Account",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Start,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            ProfileRow(image = Icons.Default.List, text = "My Orders")
+                            ProfileRow(image = Icons.Default.Logout, text = "Logout")
+                        }
+                    }
+
+                    // Communicate Card
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Communicate",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Start,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            ProfileRow(image = Icons.Default.LocationCity, text = "Store Location")
+                            ProfileRow(image = Icons.Default.StarRate, text = "Rate Us")
+                        }
+                    }
 
                 }
+
             }
 
-
-            // Manage Account Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Manage Account",
-                        color = Color.Gray,
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    ProfileRow(image = Icons.Default.AccountCircle, text = "Profile Information")
-                    ProfileRow(image = Icons.Default.Translate, text = "Language Preferences")
-                    ProfileRow(image = Icons.Default.Subscriptions, text = "Manage Subscription")
-                }
-            }
-
-            // Customer Support Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Customer Support",
-                        color = Color.Gray,
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    ProfileRow(image = Icons.Default.ContactSupport, text = "Contact & Customer Support")
-                }
-            }
-
-            // Account Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Account",
-                        color = Color.Gray,
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    ProfileRow(image = Icons.Default.List, text = "My Orders")
-                    ProfileRow(image = Icons.Default.Logout, text = "Logout")
-                }
-            }
-
-            // Communicate Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Communicate",
-                        color = Color.Gray,
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    ProfileRow(image = Icons.Default.LocationCity, text = "Store Location")
-                    ProfileRow(image = Icons.Default.StarRate, text = "Rate Us")
-                }
-            }
+            else -> {}
         }
     }
 }
