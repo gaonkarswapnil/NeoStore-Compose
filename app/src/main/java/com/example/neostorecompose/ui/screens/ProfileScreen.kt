@@ -72,18 +72,17 @@ fun ProfileScreen(
             .fillMaxSize()
     ) {
 
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-
             when (dashboardResponse) {
                 is UiState.Error -> {}
                 is UiState.Loading -> LoaderComp()
                 is UiState.Success -> {
 
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
                     val res = dashboardResponse.data
 //                    Log.d("AccessTokenProfileSuccess", "ProfileScreenResponse: ${ .toString()} ")
                     Card(
@@ -123,125 +122,125 @@ fun ProfileScreen(
                             }
                         }
                     }
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Manage Account",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Start,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            ProfileRow(
+                                image = Icons.Default.AccountCircle, text = "Profile Information",
+                                onClick = {
+                                    navController.navigate(Screens.ProfileScreen.route)
+                                }
 
-                }
+                            )
+                            ProfileRow(
+                                image = Icons.Default.Translate, text = "Language Preferences",
+                                onClick = {}
 
+                            )
+                            ProfileRow(
+                                image = Icons.Default.Subscriptions, text = "Manage Subscription",
+                                onClick = {}
+                            )
+                        }
+                    }
+
+                    // Customer Support Card
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Customer Support",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Start,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            ProfileRow(
+                                image = Icons.Default.ContactSupport,
+                                text = "Contact & Customer Support",
+                                onClick = {}
+
+                            )
+                        }
+                    }
+
+                    // Account Card
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Account",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Start,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            ProfileRow(
+                                image = Icons.Default.List, text = "My Orders",
+                                onClick = {}
+
+                            )
+                            ProfileRow(
+                                image = Icons.Default.Logout, text = "Logout",
+                                onClick = {}
+                            )
+                        }
+                    }
+
+                    // Communicate Card
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.LightGray)
+                    ) {
+                        Column(Modifier.padding(16.dp)) {
+                            Text(
+                                text = "Communicate",
+                                color = Color.Gray,
+                                textAlign = TextAlign.Start,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                            ProfileRow(
+                                image = Icons.Default.LocationCity, text = "Store Location",
+                                onClick = {}
+                            )
+                            ProfileRow(
+                                image = Icons.Default.StarRate, text = "Rate Us",
+                                onClick = {}
+                            )
+                        }
+                    }
+
+
+                    }
+
+
+            }
                 else -> {
 
                 }
-            }
 
-
-            // Manage Account Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Manage Account",
-                        color = Color.Gray,
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    ProfileRow(
-                        image = Icons.Default.AccountCircle, text = "Profile Information",
-                        onClick = {
-                            navController.navigate(Screens.ProfileScreen.route)
-                        }
-
-                    )
-                    ProfileRow(
-                        image = Icons.Default.Translate, text = "Language Preferences",
-                        onClick = {}
-
-                    )
-                    ProfileRow(
-                        image = Icons.Default.Subscriptions, text = "Manage Subscription",
-                        onClick = {}
-                    )
-                }
-            }
-
-            // Customer Support Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Customer Support",
-                        color = Color.Gray,
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    ProfileRow(
-                        image = Icons.Default.ContactSupport,
-                        text = "Contact & Customer Support",
-                        onClick = {}
-
-                    )
-                }
-            }
-
-            // Account Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Account",
-                        color = Color.Gray,
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    ProfileRow(
-                        image = Icons.Default.List, text = "My Orders",
-                        onClick = {}
-
-                    )
-                    ProfileRow(
-                        image = Icons.Default.Logout, text = "Logout",
-                        onClick = {}
-                    )
-                }
-            }
-
-            // Communicate Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.LightGray)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        text = "Communicate",
-                        color = Color.Gray,
-                        textAlign = TextAlign.Start,
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    ProfileRow(
-                        image = Icons.Default.LocationCity, text = "Store Location",
-                        onClick = {}
-                    )
-                    ProfileRow(
-                        image = Icons.Default.StarRate, text = "Rate Us",
-                        onClick = {}
-                    )
-                }
-            }
         }
     }
 }

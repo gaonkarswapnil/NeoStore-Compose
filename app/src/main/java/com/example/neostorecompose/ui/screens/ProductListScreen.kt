@@ -63,7 +63,7 @@ fun ProductListScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* handle back */ }) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             Icons.Filled.ArrowBackIosNew,
                             contentDescription = "Back",
