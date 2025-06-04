@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 fun CustomButton(
     onClick: () -> Unit,
     text: String,
+    modifier: Modifier,
     colors: ButtonColors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)) {
     Button(
         onClick = onClick,
