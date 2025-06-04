@@ -1,8 +1,9 @@
 package com.example.neostorecompose.ui.screens
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -15,27 +16,36 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.neostorecompose.ui.components.BackgroundForScreens
 import com.example.neostorecompose.ui.components.LoaderComp
-import com.example.neostorecompose.ui.components.OrderCard
+import com.example.neostorecompose.ui.components.OrderDetailCard
 import com.example.neostorecompose.ui.viewmodel.OrderViewModel
 import com.example.neostorecompose.ui.viewmodel.UserViewModel
 import com.example.neostorecompose.utils.UiState
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderListScreen(navController: NavController,userViewModel: UserViewModel, orderViewModel: OrderViewModel) {
-    val orders = orderViewModel.getAllOrderRes.collectAsState().value
+fun OrderDetailsScreen(
+    orderId: Int,
+    navController: NavController,
+    userViewModel: UserViewModel,
+    orderViewModel: OrderViewModel
+) {
 
+
+    val orderState = orderViewModel.fetchOrderRes.collectAsState().value
     val accessToken = userViewModel.getAccessToken() ?: ""
-
-    LaunchedEffect(accessToken){
-        orderViewModel.getAllOrders(accessToken)
+    LaunchedEffect(accessToken) {
+        orderViewModel.fetchOneOrderById(accessToken, orderId)
     }
 
 
@@ -45,7 +55,7 @@ fun OrderListScreen(navController: NavController,userViewModel: UserViewModel, o
                 title = {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "OrderList",
+                            text = "OrderId : $orderId",
                             color = Color.White,
                             style = MaterialTheme.typography.titleLarge,
                             modifier = Modifier.align(Alignment.Center)
@@ -70,37 +80,41 @@ fun OrderListScreen(navController: NavController,userViewModel: UserViewModel, o
         }
     ) { inner ->
 
-        Column(
-            modifier = Modifier
-                .BackgroundForScreens()
-                .padding(inner)
-        ) {
-            when (orders) {
+        Box(modifier = Modifier
+            .BackgroundForScreens()
+            .fillMaxSize()
+            .padding(inner), contentAlignment = Alignment.Center) {
+            when (orderState) {
                 is UiState.Loading -> {
                     LoaderComp()
                 }
 
                 is UiState.Success -> {
+                    val orders =
+                        orderState.data.data.order_details
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
                     ) {
-                        items(orders.data.data) {
-                            OrderCard(order = it, onClick = { orderId ->
-                                val route = "fetchOrderDetails/${orderId}"
-                                navController.navigate(route)
-                            })
+                        items(orders) { oneorderdetail ->
+                            OrderDetailCard(order = oneorderdetail)
                         }
                     }
                 }
 
                 is UiState.Error -> {
                     // Show error message
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = "Error: ${orderState.message}")
+                    }
                 }
 
                 else -> {
-                    // Handle idle state
+                    // Show empty state if needed
                 }
             }
         }
     }
+
 }

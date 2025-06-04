@@ -207,7 +207,9 @@ fun ProfileScreen(
                     )
                     ProfileRow(
                         image = Icons.Default.List, text = "My Orders",
-                        onClick = {}
+                        onClick = {
+                            navController.navigate(Screens.OrderListScreen.route)
+                        }
 
                     )
                     ProfileRow(
