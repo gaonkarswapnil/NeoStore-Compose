@@ -223,7 +223,7 @@ fun ProfileScreen(
                             )
                             ProfileRow(
                                 image = Icons.Default.LocationCity, text = "Store Location",
-                                onClick = {}
+                                onClick = { navController.navigate(Screens.StoreLocationScreen.route)}
                             )
                             ProfileRow(
                                 image = Icons.Default.StarRate, text = "Rate Us",

@@ -17,6 +17,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.neostorecompose.ui.components.BottomNavigationBar
+import com.example.neostorecompose.ui.components.StoreLocationMainScreen
 import com.example.neostorecompose.ui.screens.AddAddressScreen
 import com.example.neostorecompose.ui.screens.AddressListScreen
 import com.example.neostorecompose.ui.screens.CartListScreen
@@ -32,6 +33,8 @@ import com.example.neostorecompose.ui.viewmodel.AddressViewModel
 import com.example.neostorecompose.ui.viewmodel.CartViewModel
 import com.example.neostorecompose.ui.viewmodel.DashboardViewModel
 import com.example.neostorecompose.ui.viewmodel.OrderViewModel
+import com.example.neostorecompose.utils.storeList
+
 
 @Composable
 fun SetUpNav(navHostController: NavHostController) {
@@ -159,6 +162,10 @@ fun SetUpNav(navHostController: NavHostController) {
             composable(Screens.OrderListScreen.route){
                 OrderListScreen()
             }
+            composable(Screens.StoreLocationScreen.route){
+                StoreLocationMainScreen()
+            }
+
         }
 
     }

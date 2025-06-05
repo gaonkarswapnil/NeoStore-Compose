@@ -17,6 +17,7 @@ sealed class Screens(val route: String) {
 
 
     object OrderListScreen : Screens("orderListScreen")
+    object StoreLocationScreen : Screens("store_map")
 
 
 
