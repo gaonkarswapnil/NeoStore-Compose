@@ -2,6 +2,7 @@ package com.example.neostorecompose.domain.repository
 
 import com.example.neostorecompose.data.dto.DashboardResponse
 import com.example.neostorecompose.data.dto.ForgetPasswordResponse
+import com.example.neostorecompose.data.dto.ResetPasswordResponse
 import com.example.neostorecompose.data.dto.UpdateProfileRequest
 import com.example.neostorecompose.data.dto.UpdateProfileResponse
 import com.example.neostorecompose.data.dto.UserLoginResponse
@@ -24,5 +25,13 @@ interface UserRepository {
     suspend fun forgetPassword(
         email: String
     ): Response<ForgetPasswordResponse>
+
+    suspend fun changePassword(
+        accessToken: String,
+        old_password:String,
+        password:String,
+        confirm_password:String
+    ):Response<ResetPasswordResponse>
+
 
 }
