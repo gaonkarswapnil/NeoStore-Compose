@@ -1,6 +1,7 @@
 package com.example.neostorecompose.data.repositoryimpl
 
 import com.example.neostorecompose.data.dto.DashboardResponse
+import com.example.neostorecompose.data.dto.ForgetPasswordResponse
 import com.example.neostorecompose.data.dto.UpdateProfileRequest
 import com.example.neostorecompose.data.dto.UpdateProfileResponse
 import com.example.neostorecompose.data.dto.UserLoginResponse
@@ -72,6 +73,16 @@ class UserRepositoryImpl @Inject constructor(
             profilePic = updateProfileRequest.profile_pic,
         )
         return if(response.isSuccessful){
+            Response.success(response.body())
+        }else{
+            Response.error(response.code(), response.errorBody()!!)
+        }
+    }
+
+    override suspend fun forgetPassword(email: String): Response<ForgetPasswordResponse> {
+        val response = service.forgetPassword(email)
+
+        return if(response.isSuccessful && response.body()!=null){
             Response.success(response.body())
         }else{
             Response.error(response.code(), response.errorBody()!!)

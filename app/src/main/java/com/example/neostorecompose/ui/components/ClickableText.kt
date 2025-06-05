@@ -9,9 +9,12 @@ import androidx.compose.ui.text.style.TextDecoration
 import com.example.neostorecompose.ui.theme.OrangePrimary
 
 @Composable
-fun ClickText(onClick :() -> Unit){
+fun ClickText(
+    text: String,
+    onClick :() -> Unit
+){
     Text(
-        text = "SignUp",
+        text = text,
         color = OrangePrimary,
         style = MaterialTheme.typography.bodyMedium,
         textDecoration = TextDecoration.Underline,

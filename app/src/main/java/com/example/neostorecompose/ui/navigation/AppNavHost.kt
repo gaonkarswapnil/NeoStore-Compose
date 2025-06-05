@@ -12,7 +12,6 @@ import androidx.navigation.compose.composable
 import com.example.neostorecompose.ui.screens.LoginScreen
 import com.example.neostorecompose.ui.screens.RegisterScreen
 import com.example.neostorecompose.ui.viewmodel.UserViewModel
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
@@ -23,6 +22,8 @@ import com.example.neostorecompose.ui.screens.CartListScreen
 import com.example.neostorecompose.ui.screens.DashboardScreen
 import com.example.neostorecompose.ui.screens.ProductDetailsScreen
 import com.example.neostorecompose.ui.screens.EditProfileScreen
+import com.example.neostorecompose.ui.screens.ForgetPasswordScreen
+import com.example.neostorecompose.ui.screens.OrderDetailsScreen
 import com.example.neostorecompose.ui.screens.OrderListScreen
 import com.example.neostorecompose.ui.screens.ProductListScreen
 import com.example.neostorecompose.ui.viewmodel.ProductViewModel
@@ -83,6 +84,9 @@ fun SetUpNav(navHostController: NavHostController) {
                         navHostController.navigate(SealedBottomNavItem.dashboard.route) {
                             popUpTo("login") { inclusive = true }
                         }
+                    },
+                    forgetPassword = {
+                        navHostController.navigate(Screens.ForgetPasswordScreen.route)
                     },
                     onClick = {
                         navHostController.navigate(Screens.Register.route)
@@ -157,7 +161,17 @@ fun SetUpNav(navHostController: NavHostController) {
             }
 
             composable(Screens.OrderListScreen.route){
-                OrderListScreen()
+                OrderListScreen(navHostController, userViewModel,orderViewModel)
+            }
+            composable(Screens.OrderDetailsScreen.route, arguments = listOf(
+                navArgument("orderId") { type = NavType.IntType }
+            )) { navBackStackEntry ->
+                val orderId = navBackStackEntry.arguments?.getInt("orderId") ?: 0
+                OrderDetailsScreen(orderId,navHostController,userViewModel, orderViewModel)
+            }
+
+            composable(Screens.ForgetPasswordScreen.route){
+                ForgetPasswordScreen(navHostController, userViewModel)
             }
         }
 

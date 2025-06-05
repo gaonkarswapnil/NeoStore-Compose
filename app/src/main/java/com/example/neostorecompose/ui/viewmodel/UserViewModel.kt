@@ -2,12 +2,14 @@ package com.example.neostorecompose.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neostorecompose.data.dto.ForgetPasswordResponse
 import com.example.neostorecompose.data.dto.UpdateProfileRequest
 import com.example.neostorecompose.data.dto.UpdateProfileResponse
 import com.example.neostorecompose.data.dto.UserLoginResponse
 import com.example.neostorecompose.domain.model.UserLoginRequest
 import com.example.neostorecompose.domain.model.request.UserRegistrationRequest
 import com.example.neostorecompose.domain.model.response.UserRegistrationResponse
+import com.example.neostorecompose.domain.usecase.ForgetPasswordUseCase
 import com.example.neostorecompose.domain.usecase.UpdateProfileUseCase
 import com.example.neostorecompose.domain.usecase.UserLoginUseCase
 import com.example.neostorecompose.domain.usecase.UserRegisterUseCase
@@ -24,6 +26,7 @@ class UserViewModel @Inject constructor(
     private val registerUseCase: UserRegisterUseCase,
     private val loginUseCase: UserLoginUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
+    private val forgetPasswordUseCase: ForgetPasswordUseCase,
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
@@ -133,4 +136,25 @@ class UserViewModel @Inject constructor(
 
 
     fun getAccessToken() = tokenManager.getAccessToken()
+
+
+
+    private val _forgetPasswordState =
+        MutableStateFlow<UiState<ForgetPasswordResponse>>(UiState.Idle)
+    val forgetPasswordState: StateFlow<UiState<ForgetPasswordResponse>> = _forgetPasswordState
+    fun forgetPassword(email: String){
+        _forgetPasswordState.value = UiState.Loading
+        viewModelScope.launch {
+            try{
+                val response = forgetPasswordUseCase(email)
+                if (response.isSuccessful){
+                    _forgetPasswordState.value = UiState.Success(response.body()!!)
+                }else{
+                    _forgetPasswordState.value = UiState.Error(response.errorBody().toString())
+                }
+            }catch (e: Exception){
+                _forgetPasswordState.value = UiState.Error(e.message!!)
+            }
+        }
+    }
 }

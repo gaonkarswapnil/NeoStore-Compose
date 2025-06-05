@@ -1,6 +1,7 @@
 package com.example.neostorecompose.data.remote
 
 import com.example.neostorecompose.data.dto.DashboardResponse
+import com.example.neostorecompose.data.dto.ForgetPasswordResponse
 import com.example.neostorecompose.data.dto.UpdateProfileRequest
 import com.example.neostorecompose.data.dto.UpdateProfileResponse
 import com.example.neostorecompose.data.dto.UserLoginResponse
@@ -52,6 +53,13 @@ interface UserApiService {
         @Field("phone_no") phoneNo: String,
         @Field("profile_pic") profilePic: String
     ):Response<UpdateProfileResponse>
+
+
+    @FormUrlEncoded
+    @POST("api/users/forgot")
+    suspend fun forgetPassword(
+        @Field("email") email: String
+    ): Response<ForgetPasswordResponse>
 
 
 }

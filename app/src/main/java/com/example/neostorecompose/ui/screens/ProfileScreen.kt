@@ -1,8 +1,8 @@
 package com.example.neostorecompose.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,9 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.ContactSupport
-import androidx.compose.material.icons.filled.GTranslate
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.LocationCity
 import androidx.compose.material.icons.filled.Logout
@@ -26,9 +24,6 @@ import androidx.compose.material.icons.filled.Subscriptions
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,12 +32,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.neostorecompose.domain.model.request.UserRegistrationRequest
+import coil.compose.rememberAsyncImagePainter
 import com.example.neostorecompose.ui.components.BackgroundForScreens
 import com.example.neostorecompose.ui.components.LoaderComp
 import com.example.neostorecompose.ui.components.ProfileRow
@@ -55,7 +49,7 @@ import com.example.neostorecompose.utils.UiState
 fun ProfileScreen(
     userViewModel: UserViewModel,
     dashboardViewModel: DashboardViewModel,
-    navController:NavController
+    navController: NavController
 ) {
     val accessToken = userViewModel.getAccessToken()
     LaunchedEffect(accessToken) {
@@ -72,17 +66,21 @@ fun ProfileScreen(
             .fillMaxSize()
     ) {
 
-            when (dashboardResponse) {
-                is UiState.Error -> {}
-                is UiState.Loading -> LoaderComp()
-                is UiState.Success -> {
+        when (dashboardResponse) {
+            is UiState.Error -> {}
+            is UiState.Loading -> {
+                LoaderComp()
+            }
 
-                    Column(
-                        modifier = Modifier
-                            .verticalScroll(rememberScrollState())
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
+            is UiState.Success -> {
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+
                     val res = dashboardResponse.data
 //                    Log.d("AccessTokenProfileSuccess", "ProfileScreenResponse: ${ .toString()} ")
                     Card(
@@ -95,20 +93,20 @@ fun ProfileScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(16.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.AccountCircle,
-                                contentDescription = "User Image",
-                                tint = Color.DarkGray,
+                            Image(
+                                painter = rememberAsyncImagePainter(res.productData.user_data.profile_pic),
+                                contentDescription = "",
+                                contentScale = ContentScale.Fit,
                                 modifier = Modifier
-                                    .width(64.dp)
-                                    .height(64.dp)
+                                    .padding(3.dp)
+                                    .height(100.dp)
+                                    .width(100.dp)
                             )
 
                             Spacer(modifier = Modifier.width(16.dp))
 
 
                             Column {
-                                val userData = dashboardResponse.data
                                 Text(
                                     text = "${res.productData.user_data.first_name} ${res.productData.user_data.last_name}",
                                     style = MaterialTheme.typography.titleMedium,
@@ -122,6 +120,9 @@ fun ProfileScreen(
                             }
                         }
                     }
+
+
+                    // Manage Account Card
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -137,7 +138,8 @@ fun ProfileScreen(
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
                             ProfileRow(
-                                image = Icons.Default.AccountCircle, text = "Profile Information",
+                                image = Icons.Default.AccountCircle,
+                                text = "Profile Information",
                                 onClick = {
                                     navController.navigate(Screens.ProfileScreen.route)
                                 }
@@ -149,7 +151,8 @@ fun ProfileScreen(
 
                             )
                             ProfileRow(
-                                image = Icons.Default.Subscriptions, text = "Manage Subscription",
+                                image = Icons.Default.Subscriptions,
+                                text = "Manage Subscription",
                                 onClick = {}
                             )
                         }
@@ -196,7 +199,9 @@ fun ProfileScreen(
                             )
                             ProfileRow(
                                 image = Icons.Default.List, text = "My Orders",
-                                onClick = {}
+                                onClick = {
+                                    navController.navigate(Screens.OrderListScreen.route)
+                                }
 
                             )
                             ProfileRow(
@@ -231,16 +236,14 @@ fun ProfileScreen(
                             )
                         }
                     }
-
-
-                    }
-
-
-            }
-                else -> {
-
                 }
 
+            }
+
+            else -> {
+
+            }
         }
     }
+
 }

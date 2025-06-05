@@ -49,6 +49,7 @@ import com.example.neostorecompose.utils.UiState
 fun LoginScreen(
     userViewModel: UserViewModel,
     onLoginSuccess: () -> Unit,
+    forgetPassword: () -> Unit,
     onClick: () -> Unit
 ) {
 
@@ -111,6 +112,14 @@ fun LoginScreen(
                     errorMessage = passwordError
                 )
 
+                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp), horizontalArrangement = Arrangement.End) {
+                    ClickText(
+                        "Forget Password??"
+                    ){
+                        forgetPassword()
+                    }
+                }
+
                 Button(
                     colors = ButtonDefaults.buttonColors(OrangeVariant),
                     onClick = {
@@ -162,7 +171,9 @@ fun LoginScreen(
                     style = MaterialTheme.typography.bodyMedium,
                 )
 
-                ClickText{
+                ClickText(
+                    "SignUp"
+                ){
                     onClick()
                 }
 
