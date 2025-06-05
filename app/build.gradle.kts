@@ -20,11 +20,13 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+
         val properties = Properties().apply {
             load(project.rootProject.file("secret.properties").inputStream())
         }
 
         buildConfigField(type = "String", name = "BASE_URL", value = properties.getProperty("BASE_URL"))
+        manifestPlaceholders["MAPS_API_KEY"] = properties["MAPS_API_KEY"] as String
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -121,6 +123,11 @@ dependencies {
 
 //    Google Fonts
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
+
+    implementation ("com.google.maps.android:maps-compose:2.11.4")
+    implementation ("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1") // For location APIs
+
 }
 
 
