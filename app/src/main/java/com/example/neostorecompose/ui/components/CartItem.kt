@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.neostorecompose.R
 import com.example.neostorecompose.data.dto.ProductItemData
 import com.example.neostorecompose.ui.viewmodel.CartViewModel
 import com.example.neostorecompose.ui.viewmodel.UserViewModel
@@ -91,14 +92,14 @@ fun CartItem(
                 ) {
                     Text(
                         text=item.product.name,
-                        style = MaterialTheme.typography.bodyMedium,
+                        style = MaterialTheme.typography.titleMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.padding(vertical = 2.dp)
                     )
 
                     Text(
-                        text=item.product.productCategory,
+                        text="Category: ${item.product.productCategory}",
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -120,7 +121,7 @@ fun CartItem(
 
                         IconButtonComp(
                             color = Color.Red,
-                            icon = Icons.Filled.Remove,
+                            icon = R.drawable.minus,
                             iconDesc = "remove",
                             onClick = {
                                 removeClick()
@@ -138,7 +139,7 @@ fun CartItem(
 
                         IconButtonComp(
                             color = Color.Green,
-                            icon = Icons.Filled.Add,
+                            icon = R.drawable.plus,
                             iconDesc = "add",
                             onClick = {
                                 addClick()
@@ -150,7 +151,7 @@ fun CartItem(
                     val cost = quantity * item.product.cost
 
                     Text(
-                        text= cost.toString(),
+                        text= "$ ${cost.toString()}",
                         style = MaterialTheme.typography.bodyMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
