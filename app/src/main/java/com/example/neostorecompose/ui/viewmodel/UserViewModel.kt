@@ -2,12 +2,15 @@ package com.example.neostorecompose.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neostorecompose.core.safeApiCall
+import com.example.neostorecompose.data.dto.ResetPasswordResponse
 import com.example.neostorecompose.data.dto.UpdateProfileRequest
 import com.example.neostorecompose.data.dto.UpdateProfileResponse
 import com.example.neostorecompose.data.dto.UserLoginResponse
 import com.example.neostorecompose.domain.model.UserLoginRequest
 import com.example.neostorecompose.domain.model.request.UserRegistrationRequest
 import com.example.neostorecompose.domain.model.response.UserRegistrationResponse
+import com.example.neostorecompose.domain.usecase.ResetPasswordUseCase
 import com.example.neostorecompose.domain.usecase.UpdateProfileUseCase
 import com.example.neostorecompose.domain.usecase.UserLoginUseCase
 import com.example.neostorecompose.domain.usecase.UserRegisterUseCase
@@ -24,6 +27,7 @@ class UserViewModel @Inject constructor(
     private val registerUseCase: UserRegisterUseCase,
     private val loginUseCase: UserLoginUseCase,
     private val updateProfileUseCase: UpdateProfileUseCase,
+    private val resetPasswordUseCase: ResetPasswordUseCase,
     private val tokenManager: TokenManager
 ) : ViewModel() {
 
@@ -35,6 +39,11 @@ class UserViewModel @Inject constructor(
     private val _updateProfileRes =
         MutableStateFlow<UiState<UpdateProfileResponse>>(UiState.Idle)
     val updateProfileRes :StateFlow<UiState<UpdateProfileResponse>> = _updateProfileRes
+
+     private val _changePassRes =
+            MutableStateFlow<UiState<ResetPasswordResponse>>(UiState.Idle)
+        val changePassRes :StateFlow<UiState<ResetPasswordResponse>> = _changePassRes
+
 
     fun userRegistration(request: UserRegistrationRequest) {
 
@@ -56,19 +65,9 @@ class UserViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            _userRegisterState.value = UiState.Loading
-            try {
-                val response = registerUseCase.invoke(request)
-
-                if (response.isSuccessful) {
-                    _userRegisterState.value = UiState.Success(
-                        data = response.body()!!
-                    )
-                } else {
-                    _userRegisterState.value = UiState.Error("Response is Empty")
-                }
-            } catch (e: Exception) {
-                _userRegisterState.value = UiState.Error(e.message!!)
+            viewModelScope.launch {
+                _userRegisterState.value = UiState.Loading
+                _userRegisterState.value = safeApiCall { registerUseCase.invoke(request) }
             }
         }
     }
@@ -94,43 +93,30 @@ class UserViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            _userLoginState.value = UiState.Loading
-
-            try {
-                val response = loginUseCase.invoke(request)
-                val accessToken = response.body()!!.user.accessToken
-                tokenManager.addAccessToken(accessToken)
-                if (response.isSuccessful) {
-                    _userLoginState.value = UiState.Success(
-                        data = response.body()!!
-                    )
-                } else {
-                    _userLoginState.value = UiState.Error("Response is Empty")
-                }
-            } catch (e: Exception) {
-                _userLoginState.value = UiState.Error(e.message!!)
-            }
+          _userLoginState.value= UiState.Loading
+          _userLoginState.value= safeApiCall { loginUseCase.invoke(request) }
         }
     }
 
 
     fun updateProfileDetails(accessToken:String, updateProfileRequest: UpdateProfileRequest){
-        _updateProfileRes.value = UiState.Loading
         viewModelScope.launch {
-            try {
-                val response = updateProfileUseCase.invoke(accessToken, updateProfileRequest)
-
-                if(response.isSuccessful && response.body()!=null){
-                    _updateProfileRes.value = UiState.Success(response.body()!!)
-                }else{
-                    _updateProfileRes.value = UiState.Error(response.errorBody().toString())
-                }
-            }catch (e:Exception){
-                _updateProfileRes.value = UiState.Error(e.message!!)
-            }
+            _updateProfileRes.value = UiState.Loading
+            _updateProfileRes.value = safeApiCall { updateProfileUseCase.invoke(accessToken, updateProfileRequest) }
         }
     }
 
 
     fun getAccessToken() = tokenManager.getAccessToken()
+
+
+    fun changePassword(token:String,old:String, pass:String,confirmpass:String){
+        viewModelScope.launch {
+            _changePassRes.value = UiState.Loading
+            _changePassRes.value = safeApiCall { resetPasswordUseCase.invoke(token, old,pass,confirmpass) }
+        }
+
+    }
+
+
 }

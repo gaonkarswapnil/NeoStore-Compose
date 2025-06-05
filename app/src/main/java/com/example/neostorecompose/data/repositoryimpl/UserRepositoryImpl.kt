@@ -1,6 +1,8 @@
 package com.example.neostorecompose.data.repositoryimpl
 
+import com.example.neostorecompose.core.toSafeResponse
 import com.example.neostorecompose.data.dto.DashboardResponse
+import com.example.neostorecompose.data.dto.ResetPasswordResponse
 import com.example.neostorecompose.data.dto.UpdateProfileRequest
 import com.example.neostorecompose.data.dto.UpdateProfileResponse
 import com.example.neostorecompose.data.dto.UserLoginResponse
@@ -27,11 +29,7 @@ class UserRepositoryImpl @Inject constructor(
             phoneNumber = register.phoneNo
         )
 
-        return if(res.isSuccessful && res.body()!=null){
-            Response.success(res.body())
-        }else{
-            Response.error(res.code(), res.errorBody()!!)
-        }
+        return res.toSafeResponse()
 
     }
 
@@ -41,20 +39,12 @@ class UserRepositoryImpl @Inject constructor(
             password = login.password
         )
 
-        return if(res.isSuccessful && res.body()!=null){
-            Response.success(res.body())
-        }else{
-            Response.error(res.code(), res.errorBody()!!)
-        }
+        return res.toSafeResponse()
     }
 
     override suspend fun getDashboard(accessToken: String): Response<DashboardResponse> {
         val response = service.fetchUserAccountDetails(accessToken)
-        return if(response.isSuccessful){
-            Response.success(response.body())
-        }else{
-            Response.error(response.code(), response.errorBody()!!)
-        }
+        return response.toSafeResponse()
     }
 
 
@@ -71,10 +61,17 @@ class UserRepositoryImpl @Inject constructor(
             dob = updateProfileRequest.dob,
             profilePic = updateProfileRequest.profile_pic,
         )
-        return if(response.isSuccessful){
-            Response.success(response.body())
-        }else{
-            Response.error(response.code(), response.errorBody()!!)
-        }
+        return response.toSafeResponse()
+    }
+
+    override suspend fun changePassword(
+        accessToken: String,
+        old_password: String,
+        password: String,
+        confirm_password: String
+    ): Response<ResetPasswordResponse> {
+        val response = service.changePassword(accessToken,old_password, password, confirm_password)
+        return response.toSafeResponse()
+
     }
 }

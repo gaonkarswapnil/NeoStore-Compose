@@ -1,5 +1,6 @@
 package com.example.neostorecompose.ui.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +43,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.neostorecompose.R
@@ -90,9 +92,10 @@ fun UserProfileDataScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate(Screens.ProfileScreen.route) {
-                            popUpTo(SealedBottomNavItem.userprofile.route) { inclusive = true }
-                        }
+//                        navController.navigate(Screens.ProfileScreen.route) {
+//                            popUpTo(SealedBottomNavItem.userprofile.route) { inclusive = true }
+//                        }
+                        navController.popBackStack()
                     }) {
                         Icon(
                             Icons.Filled.ArrowBackIosNew,
@@ -105,6 +108,33 @@ fun UserProfileDataScreen(
                     containerColor = OrangePrimary
                 )
             )
+        },
+        bottomBar = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Button(
+                    onClick = {
+                        navController.navigate(Screens.ResetPasswordScreen.route)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = OrangePrimary
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(4.dp),
+                    border = BorderStroke(1.dp, OrangePrimary)
+                ) {
+                    Text("Reset Password", fontSize = 20.sp)
+                }
+            }
         }
     ) { innerPadding ->
 
@@ -118,7 +148,9 @@ fun UserProfileDataScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(OrangePrimary)
-                        .padding(innerPadding),
+                        .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding()),
                     contentAlignment = Alignment.Center
                 ) {
                     Card(
@@ -130,10 +162,10 @@ fun UserProfileDataScreen(
                     ) {
                         Column(
                             modifier = Modifier
+                                .background(Color.White)
                                 .padding(16.dp),
                         ) {
 
-                            // Profile Image
                             Image(
                                 painter = if (userData.profile_pic.isNullOrBlank())
                                     painterResource(id = R.drawable.man)

@@ -28,6 +28,7 @@ import com.example.neostorecompose.ui.screens.OrderListScreen
 import com.example.neostorecompose.ui.screens.ProductListScreen
 import com.example.neostorecompose.ui.viewmodel.ProductViewModel
 import com.example.neostorecompose.ui.screens.ProfileScreen
+import com.example.neostorecompose.ui.screens.ResetPasswordScreen
 import com.example.neostorecompose.ui.screens.UserProfileDataScreen
 import com.example.neostorecompose.ui.viewmodel.AddressViewModel
 import com.example.neostorecompose.ui.viewmodel.CartViewModel
@@ -165,6 +166,11 @@ fun SetUpNav(navHostController: NavHostController) {
             )) { navBackStackEntry ->
                 val orderId = navBackStackEntry.arguments?.getInt("orderId") ?: 0
                 OrderDetailsScreen(orderId,navHostController,userViewModel, orderViewModel)
+            }
+
+
+            composable(Screens.ResetPasswordScreen.route) {
+                ResetPasswordScreen(navController = navHostController,userViewModel)
             }
         }
 
